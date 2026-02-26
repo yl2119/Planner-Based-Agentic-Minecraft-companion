@@ -4,9 +4,16 @@ import os from 'os';
 import path from 'path';
 import { TTSConfig as gptTTSConfig } from '../models/gpt.js';
 import { TTSConfig as geminiTTSConfig } from '../models/gemini.js';
+import { KokoroTTS } from "kokoro-js";
 
 let speakingQueue = []; // each item: {text, model, audioData, ready}
 let isSpeaking = false;
+
+const tts = await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-ONNX", {
+    device: "cpu",
+    dtype: "fp16",
+    
+});
 
 export function speak(text, speak_model) {
     const model = speak_model || 'system';
@@ -16,6 +23,15 @@ export function speak(text, speak_model) {
     if (model === 'system') {
         // no preprocessing needed
         item.ready = Promise.resolve();
+    } 
+    else if (model === 'kokoro') {
+        // FIX: Assign the promise to item.ready so processQueue waits
+        item.ready = generate(text)
+            .then(data => { 
+                item.audioData = data; 
+            })
+            .catch(err => { item.error = err; });
+        console.log("Generated audio")
     } else {
     item.ready = fetchRemoteAudio(text, model)
         .then(data => { item.audioData = data; })
@@ -24,6 +40,12 @@ export function speak(text, speak_model) {
 
     speakingQueue.push(item);
     if (!isSpeaking) processQueue();
+}
+
+async function generate(text) {
+    const output = await tts.generate(text, { voice: "af_heart" });
+    const blob = await output.toBlob();
+    return Buffer.from(await blob.arrayBuffer());
 }
 
 async function fetchRemoteAudio(txt, model) {
@@ -112,8 +134,13 @@ async function processQueue() {
 
         try {
             if (isWin) {
+
+                const audioBuffer = typeof audioData === 'string' 
+                ? Buffer.from(audioData, 'base64') 
+                : audioData;
+
                 const tmpPath = path.join(os.tmpdir(), `tts_${Date.now()}.mp3`);
-                await fs.writeFile(tmpPath, Buffer.from(audioData, 'base64'));
+                await fs.writeFile(tmpPath, audioBuffer);
 
                 const player = spawn('ffplay', ['-nodisp', '-autoexit', '-loglevel', 'quiet', tmpPath], {
                     stdio: 'ignore', windowsHide: true

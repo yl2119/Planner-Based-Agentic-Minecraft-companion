@@ -10,7 +10,8 @@ const settings = {
     
     "base_profile": "assistant", // survival, assistant, creative, or god_mode
     "profiles": [
-        "./andy.json",
+        "./profiles/Janet.json"
+        // "./andy.json",
         // "./profiles/gpt.json",
         // "./profiles/claude.json",
         // "./profiles/gemini.json",
@@ -30,7 +31,7 @@ const settings = {
     "init_message": "Respond with hello world and your name", // sends to all on spawn
     "only_chat_with": [], // users that the bots listen to and send general messages to. if empty it will chat publicly
 
-    "speak": false,
+    "speak": true,
     // allows all bots to speak through text-to-speech. 
     // specify speech model inside each profile with format: {provider}/{model}/{voice}.
     // if set to "system" it will use basic system text-to-speech. 

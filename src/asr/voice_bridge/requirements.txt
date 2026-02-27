@@ -1,0 +1,6 @@
+sounddevice
+pynput
+numpy
+soundfile
+requests
+python-socketio[client]

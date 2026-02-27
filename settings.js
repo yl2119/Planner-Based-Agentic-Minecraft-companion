@@ -37,6 +37,13 @@ const settings = {
     // if set to "system" it will use basic system text-to-speech. 
     // Works on windows and mac, but linux requires you to install the espeak package through your package manager eg: `apt install espeak` `pacman -S espeak`.
 
+
+    // ASR voice input settings
+    "asr_enabled": true,      // set to false to disable voice input
+    "asr_port": 8090,         // ASR server port
+    "asr_player": "ADMIN",    // player name the agent sees
+    "asr_key": "v",           // push-to-talk key
+
     "chat_ingame": true, // bot responses are shown in minecraft chat
     "language": "en", // translate to/from this language. Supports these language names: https://cloud.google.com/translate/docs/languages
     "render_bot_view": false, // show bot's view in browser at localhost:3000, 3001...

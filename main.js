@@ -4,6 +4,8 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { readFileSync } from 'fs';
 
+//suport asr
+import { launchASR, cleanupASR } from './src/asr/launcher.js'; 
 function parseArguments() {
     return yargs(hideBin(process.argv))
         .option('profiles', {
@@ -62,6 +64,25 @@ if (process.env.NUM_EXAMPLES) {
 if (process.env.LOG_ALL) {
     settings.log_all_prompts = process.env.LOG_ALL;
 }
+
+// Launch ASR voice input if enabled
+if (settings.asr_enabled) {
+    const firstProfile = JSON.parse(readFileSync(settings.profiles[0], 'utf8'));
+    await launchASR({
+        agent: firstProfile.name || 'Janet',
+        player: settings.asr_player || 'ADMIN',
+        port: settings.asr_port || 8090,
+        key: settings.asr_key || 'v',
+        mindserverPort: settings.mindserver_port || 8080,
+    });
+}
+
+
+// Clean up ASR processes on exit
+process.on('exit', cleanupASR);
+process.on('SIGINT', () => { cleanupASR(); process.exit(); });
+process.on('SIGTERM', () => { cleanupASR(); process.exit(); });
+
 
 Mindcraft.init(true, settings.mindserver_port, settings.auto_open_ui);
 

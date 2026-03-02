@@ -19,7 +19,116 @@
         "elbow_room": true,
         "idle_staring": true,
         "cheat": false
-    }
+    },
 
-    
+    "conversations": [
+        [
+            { "role": "user", "content": "player1: Follow me." },
+            { "role": "assistant", "content": "!followPlayer()" }
+        ],
+        [
+            { "role": "user", "content": "player2: Stop following me." },
+            { "role": "assistant", "content": "!stop()" }
+        ],
+        [
+            { "role": "user", "content": "player3: Go to those coordinates 120 65 -30." },
+            { "role": "assistant", "content": "!goToCoordinates(120, 65, -30)" }
+        ],
+        [
+            { "role": "user", "content": "player4: Come to me." },
+            { "role": "assistant", "content": "!goToPlayer()" }
+        ],
+        [
+            { "role": "user", "content": "player5: Mine the stone in front of you." },
+            { "role": "assistant", "content": "!collectBlocks('stone', 1)" }
+        ],
+        [
+            { "role": "user", "content": "player6: Chop down nearby oak logs." },
+            { "role": "assistant", "content": "!collectBlocks('oak_log', 10)" }
+        ],
+        [
+            { "role": "user", "content": "player7: Pick up the dropped items nearby." },
+            { "role": "assistant", "content": "!pickupItems()" }
+        ],
+        [
+            { "role": "user", "content": "player8: Craft wooden planks." },
+            { "role": "assistant", "content": "!craftItem('oak_planks', 4)" }
+        ],
+        [
+            { "role": "user", "content": "player9: Smelt iron ore." },
+            { "role": "assistant", "content": "!smeltItem('iron_ore', 1)" }
+        ],
+        [
+            { "role": "user", "content": "player10: Place a torch here." },
+            { "role": "assistant", "content": "!placeBlock('torch')" }
+        ],
+        [
+            { "role": "user", "content": "player11: Attack that zombie." },
+            { "role": "assistant", "content": "!attack('zombie')" }
+        ],
+        [
+            { "role": "user", "content": "player12: View this chest." },
+            { "role": "assistant", "content": "!viewChest()" }
+        ],
+        [
+            { "role": "user", "content": "player13: Take all items from this chest." },
+            { "role": "assistant", "content": "!takeFromChest('all', 64)" }
+        ],
+        [
+            { "role": "user", "content": "player14: Put one diamond into the chest." },
+            { "role": "assistant", "content": "!putInChest('diamond', 1)" }
+        ],
+        [
+            { "role": "user", "content": "player15: Feed the nearest cow." },
+            { "role": "assistant", "content": "!useOn('wheat', 'cow')" }
+        ],
+        [
+            { "role": "user", "content": "player16: Harvest the nearby wheat." },
+            { "role": "assistant", "content": "!collectBlocks('wheat', 20)" }
+        ],
+        [
+            { "role": "user", "content": "player17: Take the item out of the item frame and replace it with a diamond." },
+            { "role": "assistant", "content": "!useOn('diamond', 'item_frame')" }
+        ],
+        [
+            { "role": "user", "content": "player18: Put a red tulip in the flower pot." },
+            { "role": "assistant", "content": "!useOn('red_tulip', 'flower_pot')" }
+        ],
+        [
+            { "role": "user", "content": "player1: Read the sign in front of you." },
+            { "role": "assistant", "content": "!readSign()" }
+        ],
+
+        [
+            { "role": "user", "content": "player2: Open this chest, take one diamond, and put it into the other chest." },
+            { "role": "assistant", "content": "!viewChest()" },
+            { "role": "assistant", "content": "!takeFromChest('diamond', 1)" },
+            { "role": "assistant", "content": "!goToCoordinates(OTHER_CHEST_X, OTHER_CHEST_Y, OTHER_CHEST_Z)" },
+            { "role": "assistant", "content": "!putInChest('diamond', 1)" }
+        ],
+
+        [
+            { "role": "user", "content": "player3: Change the flower in the flower pot to a blue orchid." },
+            { "role": "assistant", "content": "!useOn('flower_pot', 'remove')" },
+            { "role": "assistant", "content": "!useOn('blue_orchid', 'flower_pot')" }
+        ],
+
+        [
+            { "role": "user", "content": "player4: Take the item out of the item frame and replace it with a diamond sword." },
+            { "role": "assistant", "content": "!useOn('item_frame', 'remove')" },
+            { "role": "assistant", "content": "!useOn('diamond_sword', 'item_frame')" }
+        ],
+
+        [
+            { "role": "user", "content": "player5: Feed all nearby cows." },
+            { "role": "assistant", "content": "!scanEntities('cow', 5)" },
+            { "role": "assistant", "content": "!useOn('wheat', 'cow')" }
+        ],
+
+        [
+            { "role": "user", "content": "player6: Harvest the wheat and replant it." },
+            { "role": "assistant", "content": "!collectBlocks('wheat', 20)" },
+            { "role": "assistant", "content": "!placeBlock('wheat_seeds')" }
+        ]
+    ]
 }

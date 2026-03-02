@@ -2,3 +2,4 @@ fastapi
 uvicorn
 soundfile
 faster-whisper
+torch==2.6.0+cu124

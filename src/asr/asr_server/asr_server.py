@@ -4,6 +4,7 @@ import io
 import os
 import soundfile as sf
 from faster_whisper import WhisperModel
+import torch
 
 app = FastAPI()
 
@@ -19,8 +20,13 @@ app.add_middleware(
 ASR_LANGUAGE = os.getenv("ASR_LANGUAGE", "en").strip()
 
 # Load ASR model
-print("[ASR] Loading Whisper model...")
-asr_model = WhisperModel("small", device="cpu", compute_type="int8")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print("[ASR] Loading Whisper model... to "+device)
+if device == "cuda":
+    asr_model = WhisperModel("small", device=device, compute_type="float16")
+else:
+    asr_model = WhisperModel("small", device="cpu", compute_type="int8")
+
 print("[ASR] Model loaded successfully")
 
 

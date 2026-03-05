@@ -54,7 +54,10 @@ function ensureVenv(componentDir, label) {
     // Determine venv python path (Windows vs Unix)
     const isWin = process.platform === 'win32';
     const venvPython = path.join(venvDir, isWin ? 'Scripts' : 'bin', isWin ? 'python.exe' : 'python');
-    const sysPython = 'py'; // Using 'py' launcher as discussed for Windows safety
+
+    //const sysPython = 'py'; // Using 'py' launcher as discussed for Windows safety
+    //commented for support to Ubuntu 2204
+    const sysPython = isWin ? 'py' : getSystemPython();
 
     let needsReinstall = false;
 
@@ -107,7 +110,11 @@ function ensureVenv(componentDir, label) {
                 execSync(`"${venvPython}" -m pip install --upgrade pip`, { cwd: componentDir, stdio: 'inherit' });
                 
                 // Note: This will use the --extra-index-url we put in your requirements.txt
-                execSync(`"${venvPython}" -m pip install -r requirements.txt`, { cwd: componentDir, stdio: 'inherit' });
+                // execSync(`"${venvPython}" -m pip install -r requirements.txt`, { cwd: componentDir, stdio: 'inherit' });
+
+                const extraTorchIndex = isWin ? '' : ' --extra-index-url https://download.pytorch.org/whl/cu124';
+                execSync(`"${venvPython}" -m pip install -r requirements.txt${extraTorchIndex}`, { cwd: componentDir, stdio: 'inherit' });
+
             }
         } catch (err) {
             console.error(`[${label}] Setup failed: ${err.message}`);

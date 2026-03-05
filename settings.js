@@ -41,7 +41,7 @@ const settings = {
     // ASR voice input settings
     "asr_enabled": true,      // set to false to disable voice input
     "asr_port": 8090,         // ASR server port
-    "asr_player": "ADMIN",    // player name the agent sees
+    "asr_player": "CattleBull",    // player name the agent sees
     "asr_key": "v",           // push-to-talk key
 
     "chat_ingame": true, // bot responses are shown in minecraft chat

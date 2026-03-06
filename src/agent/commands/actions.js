@@ -502,8 +502,10 @@ export const actionsList = [
 
     {
         name: '!goToRoom',
-        description: 'Go to a named room or location. Available rooms: ' +
-            Object.keys(settings.rooms || {}).join(', '),
+        get description() {
+            return 'Go to a named room or location. Available rooms: ' +
+                Object.keys(settings.rooms || {}).join(', ');
+        },
         params: {
             'room_name': {type: 'string', description: 'The name of the room to go to.'}
         },

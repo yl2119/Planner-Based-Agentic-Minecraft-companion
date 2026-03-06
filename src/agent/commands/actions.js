@@ -499,4 +499,19 @@ export const actionsList = [
             await skills.useToolOn(agent.bot, tool_name, target);
         })
     },
+
+    {
+        name: '!goToRoom',
+        get description() {
+            return 'Go to a named room or location. Available rooms: ' +
+                Object.keys(settings.rooms || {}).join(', ');
+        },
+        params: {
+            'room_name': {type: 'string', description: 'The name of the room to go to.'}
+        },
+        perform: runAsAction(async (agent, room_name) => {
+            await skills.goToRoom(agent.bot, room_name);
+        })
+    },
+    
 ];

@@ -41,7 +41,7 @@ const settings = {
     // ASR voice input settings
     "asr_enabled": true,      // set to false to disable voice input
     "asr_port": 8090,         // ASR server port
-    "asr_player": "ADMIN",    // player name the agent sees
+    "asr_player": "CattleBull",    // player name the agent sees
     "asr_key": "v",           // push-to-talk key
 
     "chat_ingame": true, // bot responses are shown in minecraft chat
@@ -64,7 +64,16 @@ const settings = {
     "spawn_timeout": 30, // num seconds allowed for the bot to spawn before throwing error. Increase when spawning takes a while.
     "block_place_delay": 0, // delay between placing blocks (ms) if using newAction. helps avoid bot being kicked by anti-cheat mechanisms on servers.
   
-    "log_all_prompts": false, // log ALL prompts to file
+    "log_all_prompts": true, // log ALL prompts to file
+
+
+    
+    "rooms": {
+        "kitchen":     { "x": -6,  "y": -60, "z": 21  },
+        "bedroom":     { "x": -11, "y": -60, "z": 16  },
+        "living_room": { "x": -6,   "y": -60, "z": 11 },
+        "reception": { "x": -1,   "y": -60, "z": 16 },
+    }//the length of the rooms is not fixed 
 
 }
 

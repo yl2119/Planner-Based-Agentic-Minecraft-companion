@@ -64,14 +64,15 @@ const settings = {
     "spawn_timeout": 30, // num seconds allowed for the bot to spawn before throwing error. Increase when spawning takes a while.
     "block_place_delay": 0, // delay between placing blocks (ms) if using newAction. helps avoid bot being kicked by anti-cheat mechanisms on servers.
   
-    "log_all_prompts": false, // log ALL prompts to file
+    "log_all_prompts": true, // log ALL prompts to file
 
 
     
     "rooms": {
-        "kitchen":     { "x": 10,  "y": 64, "z": 20  },
-        "bedroom":     { "x": -15, "y": 64, "z": 30  },
-        "living_room": { "x": 5,   "y": 64, "z": -10 }
+        "kitchen":     { "x": -6,  "y": -60, "z": 21  },
+        "bedroom":     { "x": -11, "y": -60, "z": 16  },
+        "living_room": { "x": -6,   "y": -60, "z": 11 },
+        "reception": { "x": -1,   "y": -60, "z": 16 },
     }//the length of the rooms is not fixed 
 
 }

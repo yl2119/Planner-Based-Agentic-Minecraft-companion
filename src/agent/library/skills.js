@@ -2111,7 +2111,7 @@ export async function useToolOn(bot, toolName, targetName) {
     }
     const room = rooms[key];
     log(bot, `Going to ${key} at (${room.x}, ${room.y}, ${room.z})...`);
-    await goToPosition(bot, room.x, room.y, room.z, 2);
+    await goToPosition(bot, room.x, room.y, room.z, 1);//closeness is set to 1 and can be changed depending on the size of the room
     log(bot, `Arrived at ${key}.`);
     return true;
 }

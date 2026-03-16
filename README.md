@@ -63,7 +63,7 @@ ollama pull sweaterdog/andy-4:micro-q8_0 && ollama pull embeddinggemma
 1) Launch ollama (If you are running the model locally)
 2) Open Minecraft Launcher and launch Version 1.21.1
 3) Go to single player and open a single player world
-4) Once you are in the world, press "esc" and select "open to LAN"
+4) Once you are in the world, press "esc" and select "open to LAN" (Allow command usage to enable voice transcript)
 5) Enter port number 55916
 6) In the root directory run `node main.js`
 7) If there are no errors in the terminal Janet should join your game

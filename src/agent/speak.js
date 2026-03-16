@@ -12,7 +12,6 @@ let isSpeaking = false;
 const tts = await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-ONNX", {
     device: "cpu",
     dtype: "fp16",
-    
 });
 
 export function speak(text, speak_model) {

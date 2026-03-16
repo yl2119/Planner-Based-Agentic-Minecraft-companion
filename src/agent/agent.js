@@ -17,6 +17,7 @@ import settings from './settings.js';
 import { Task } from './tasks/tasks.js';
 import { speak } from './speak.js';
 import { log, validateNameFormat, handleDisconnection } from './connection_handler.js';
+import {TTSService} from './kokoro/tts_launcher.js'
 
 export class Agent {
     async start(load_mem=false, init_message=null, count_id=0) {
@@ -27,9 +28,10 @@ export class Agent {
         // Initialize components
         this.actions = new ActionManager(this);
         this.prompter = new Prompter(this, settings.profile);
+        this.tts = new TTSService();
         this.name = (this.prompter.getName() || '').trim();
         console.log(`Initializing agent ${this.name}...`);
-        
+
         // Validate Name Format
         // connection_handler now ensures the message has [LoginGuard] prefix
         const nameCheck = validateNameFormat(this.name);
@@ -93,14 +95,14 @@ export class Agent {
         this.bot.on('login', () => {
             console.log(this.name, 'logged in!');
             serverProxy.login();
-            
+
             // Set skin for profile, requires Fabric Tailor. (https://modrinth.com/mod/fabrictailor)
             if (this.prompter.profile.skin)
                 this.bot.chat(`/skin set URL ${this.prompter.profile.skin.model} ${this.prompter.profile.skin.path}`);
             else
                 this.bot.chat(`/skin clear`);
         });
-		const spawnTimeoutDuration = settings.spawn_timeout;
+        const spawnTimeoutDuration = settings.spawn_timeout;
         const spawnTimeout = setTimeout(() => {
             const msg = `Bot has not spawned after ${spawnTimeoutDuration} seconds. Exiting.`;
             log(this.name, msg);
@@ -421,7 +423,11 @@ export class Agent {
         }
         else {
             if (settings.speak) {
-                speak(to_translate, this.prompter.profile.speak_model);
+                if (this.prompter.profile.speak_model === "kokoro"){
+                    this.tts.speak(to_translate)
+                }else{
+                    speak(to_translate, this.prompter.profile.speak_model);
+                }
             }
             if (settings.chat_ingame) {this.bot.chat(message);}
             sendOutputToServer(this.name, message);

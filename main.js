@@ -3,7 +3,8 @@ import settings from './settings.js';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { readFileSync } from 'fs';
-
+//support kokoro-tts
+import { TTSService } from './src/agent/kokoro/tts_launcher.js';
 //suport asr
 import { launchASR, cleanupASR } from './src/asr/launcher.js'; 
 function parseArguments() {
@@ -65,6 +66,9 @@ if (process.env.LOG_ALL) {
     settings.log_all_prompts = process.env.LOG_ALL;
 }
 
+// Initialize MindServer BEFORE launching ASR (Voice Bridge needs it to connect)
+Mindcraft.init(true, settings.mindserver_port, settings.auto_open_ui);
+
 // Launch ASR voice input if enabled
 if (settings.asr_enabled) {
     const firstProfile = JSON.parse(readFileSync(settings.profiles[0], 'utf8'));
@@ -76,15 +80,19 @@ if (settings.asr_enabled) {
         mindserverPort: settings.mindserver_port || 8080,
     });
 }
-
+// Launch Kokoro-TTS if model is selected
+if (settings.speak){
+    try{
+        await new TTSService().boot()
+    }catch(err){
+        console.log("Error booting TTS ",err)
+    }
+}
 
 // Clean up ASR processes on exit
 process.on('exit', cleanupASR);
 process.on('SIGINT', () => { cleanupASR(); process.exit(); });
 process.on('SIGTERM', () => { cleanupASR(); process.exit(); });
-
-
-Mindcraft.init(true, settings.mindserver_port, settings.auto_open_ui);
 
 for (let profile of settings.profiles) {
     const profile_json = JSON.parse(readFileSync(profile, 'utf8'));

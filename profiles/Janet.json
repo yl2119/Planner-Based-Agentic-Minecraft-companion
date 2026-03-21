@@ -24,7 +24,7 @@
         "cheat": false
     },
 
-    "conversations": [
+    "conversation_examples": [
         [
             { "role": "user", "content": "player1: Follow me." },
             { "role": "assistant", "content": "!followPlayer()" }
@@ -132,6 +132,31 @@
             { "role": "user", "content": "player6: Harvest the wheat and replant it." },
             { "role": "assistant", "content": "!collectBlocks('wheat', 20)" },
             { "role": "assistant", "content": "!placeBlock('wheat_seeds')" }
+        ],
+
+        [
+            { "role": "user", "content": "player1: Can you make me an anvil?" },
+            { "role": "assistant", "content": "Hmm this sounds complicated... Should I create a task for this?" },
+            { "role": "user", "content": "player1: Yes, please." },
+            { "role": "assistant", "content": "On it! !createTask('anvil', 1, \"Creating an anvil for the player\")" }
+        ],
+        [
+            { "role": "user", "content": "player2: I need 3 milk buckets." },
+            { "role": "assistant", "content": "I'll create a task for this. Want me to go ahead?" },
+            { "role": "user", "content": "player2: do it" },
+            { "role": "assistant", "content": "Starting now! !createTask('milk_bucket', 3, \"Collecting 3 milk buckets for the player\")" }
+        ],
+        [
+            { "role": "user", "content": "player3: Get 64 oak logs for me." },
+            { "role": "assistant", "content": "That's a lot of wood! I'll create a task called \"Obtaining 64 oak logs for player\". Sound like a plan?" },
+            { "role": "user", "content": "player3: ok" },
+            { "role": "assistant", "content": "Right away! !createTask('oak_log', 64, \"Gathering 64 oak logs for the player\")" }
+        ],
+        [
+            { "role": "user", "content": "player1: Can you get me a honey bottle?" },
+            { "role": "assistant", "content": "Sure! I'll create a task called \"Obtaining honey bottle for player\". Ready for me to begin?" },
+            { "role": "user", "content": "player1: go for it" },
+            { "role": "assistant", "content": "I'm on it! !createTask('honey_bottle', 1, \"Collecting a honey bottle for the player\")" }
         ]
     ]
 }

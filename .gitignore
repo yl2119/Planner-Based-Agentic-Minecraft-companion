@@ -30,3 +30,5 @@ server_data*
 src/mindcraft-py/__pycache__/
 *.onnx
 *.bin
+.venv/
+node_modules/

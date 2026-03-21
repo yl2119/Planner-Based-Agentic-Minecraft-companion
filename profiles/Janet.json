@@ -132,6 +132,11 @@
             { "role": "user", "content": "player6: Harvest the wheat and replant it." },
             { "role": "assistant", "content": "!collectBlocks('wheat', 20)" },
             { "role": "assistant", "content": "!placeBlock('wheat_seeds')" }
+        ],
+
+        [
+            { "role": "user", "content": "player7: What blocks are around us?" },
+            { "role": "assistant", "content": "!nearbyBlockTypes(20, 1)" }
         ]
     ]
 }

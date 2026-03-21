@@ -16,7 +16,7 @@ let Item = null;
  * @typedef {string} ItemName
  * @typedef {string} BlockName
 */
-
+const TOOL_TIERS = ['netherite', 'diamond', 'iron', 'gold', 'stone', 'wooden'];
 export const WOOD_TYPES = ['oak', 'spruce', 'birch', 'jungle', 'acacia', 'dark_oak', 'mangrove', 'cherry'];
 export const MATCHING_WOOD_BLOCKS = [
     'log',
@@ -520,4 +520,226 @@ function formatPlan(targetItem, { required, steps, leftovers }) {
     }
 
     return lines.join('\n');
+}
+
+export function requireTool(blockName) {
+    const block = mcdata.blocksByName[blockName];
+
+    // State 3: Not a valid block at all (e.g., an item like 'stone_pickaxe')
+    if (!block) {
+        return undefined; 
+    }
+
+    if (block.harvestTools && Object.keys(block.harvestTools).length > 0) {
+        const toolIds = Object.keys(block.harvestTools);
+        const toolNames = toolIds.map(id => mcdata.items[id]?.name).filter(Boolean);
+        
+        // State 1: Requires a specific tool
+        return toolNames[0] || null; 
+    } else {
+        // State 2: It IS a block, but doesn't have harvestTools (can be mined by hand)
+        return null;
+    }
+}
+
+// Helper to get tier index (lower is better/stronger)
+function getTier(toolName) {
+    if (!toolName) return Infinity;
+    const material = toolName.split('_')[0];
+    const index = TOOL_TIERS.indexOf(material);
+    return index === -1 ? Infinity : index;
+}
+
+export async function createPlan(targetItem, count = 1, current_inventory = {}) {
+    initializeLoopingItems();
+    
+    if (!targetItem || count <= 0 || !getItemId(targetItem)) {
+        return JSON.stringify({ error: "Invalid input. Please provide a valid item name and positive count." });
+    }
+
+    let step_count = 1;
+    let steps = [];
+    let simulated_inventory = { ...current_inventory };
+    const active_resolutions = new Set();
+
+    function addStep(desc) {
+        steps.push({
+            step_id: `step_${step_count++}`,
+            description: desc,
+            status: "pending" 
+        });
+    }
+
+    function resolveFuel(itemsToSmelt) {
+        const fuels = ['coal', 'charcoal', 'oak_log'];
+        let chosenFuel = 'coal'; 
+        for (const f of fuels) {
+            if (simulated_inventory[f] > 0) { chosenFuel = f; break; }
+        }
+        const itemsPerFuel = getFuelSmeltOutput(chosenFuel) || 1;
+        const fuelNeeded = Math.ceil(itemsToSmelt / itemsPerFuel);
+        resolveItem(chosenFuel, fuelNeeded);
+        simulated_inventory[chosenFuel] -= fuelNeeded;
+        return { name: chosenFuel, amount: fuelNeeded };
+    }
+
+    // Helper to find if we already have a suitable tool in inventory
+    function getBestToolInInventory(requiredTool) {
+        if (!requiredTool) return null;
+        
+        const toolType = requiredTool.split('_').slice(1).join('_'); // e.g., "pickaxe"
+        const requiredTier = getTier(requiredTool);
+
+        let bestTool = null;
+        let bestTier = Infinity;
+
+        // Check all items in simulated inventory
+        for (const [itemName, count] of Object.entries(simulated_inventory)) {
+            if (count > 0 && itemName.endsWith(toolType)) {
+                const currentTier = getTier(itemName);
+                // Must be at least as good as required (lower or equal index)
+                if (currentTier <= requiredTier && currentTier < bestTier) {
+                    bestTier = currentTier;
+                    bestTool = itemName;
+                }
+            }
+        }
+        return bestTool;
+    }
+
+    function resolveItem(item, amountNeeded) {
+        let available = simulated_inventory[item] || 0;
+        if (available >= amountNeeded) return;
+        if (active_resolutions.has(item)) return;
+        active_resolutions.add(item);
+
+        let needed = amountNeeded - available;
+
+        // --- SPECIAL CASE: Redirect Planks to Logs ---
+        if (item.endsWith('_planks')) {
+            const woodType = item.split('_')[0]; 
+            const logType = `${woodType}_log`;
+            
+            // 1 Log = 4 Planks
+            const logsNeeded = Math.ceil(needed / 4);
+            const planksYielded = logsNeeded * 4; // Calculate the actual yield
+            
+            resolveItem(logType, logsNeeded);
+
+            // Consume the logs used
+            simulated_inventory[logType] -= logsNeeded;
+            
+            // Output the actual yield
+            addStep(`Craft ${planksYielded} ${item} from ${logsNeeded} ${logType}`);
+            simulated_inventory[item] = (simulated_inventory[item] || 0) + planksYielded;
+            
+            active_resolutions.delete(item);
+            return;
+        }
+
+        // --- ROUTE C: Animal Drops ---
+        let animalSource = getItemAnimalSource(item);
+        if (animalSource) {
+            addStep(`Hunt ${animalSource} to collect ${needed} ${item}`);
+            simulated_inventory[item] = (simulated_inventory[item] || 0) + needed;
+            active_resolutions.delete(item);
+            return;
+        }
+
+        // --- ROUTE B: Smelting ---
+        let smeltIngredient = getItemSmeltingIngredient(item);
+        if (smeltIngredient) {
+            resolveItem(smeltIngredient, needed);
+            const fuelUsed = resolveFuel(needed);
+            addStep(`Smelt ${needed} ${smeltIngredient} using ${fuelUsed.amount} ${fuelUsed.name} into ${item}`);
+            simulated_inventory[item] = (simulated_inventory[item] || 0) + needed;
+            active_resolutions.delete(item);
+            return;
+        }
+
+        // ==========================================
+        // DETERMINISTIC FORK: Manufactured vs Natural
+        // ==========================================
+        const isNaturalResource = isBaseItem(item); 
+        const recipes = getItemCraftingRecipes(item);
+
+        // --- ROUTE A: CRAFTING (Prioritized for Manufactured Goods like Anvils) ---
+        // If it's NOT a raw material, and it has a recipe, we MUST craft it.
+        if (!isNaturalResource && recipes && recipes.length > 0) {
+            let [recipe, result] = recipes[0];
+            let yieldCount = result.craftedCount || 1;
+            let batches = Math.ceil(needed / yieldCount);
+
+            for (let [ingName, ingCount] of Object.entries(recipe)) {
+                const totalIngNeeded = ingCount * batches;
+                let skipItem = false;
+                
+                // CHECK IF INVENTORY HAS ENOUGH OF THE ITEM
+                for (const [itemName, count] of Object.entries(simulated_inventory)) {
+                    if (itemName === ingName && count >= totalIngNeeded){
+                        skipItem = true;
+                        break;
+                    }
+                }
+                
+                // SKIP RESOLVING ITEM IF INVENTORY ALREADY HAS THE ITEM
+                if(!skipItem){
+                    resolveItem(ingName, totalIngNeeded);
+                    // --- CRITICAL FIX: Consume the ingredients ---
+                    simulated_inventory[ingName] -= totalIngNeeded;
+                }
+            }
+
+            addStep(`Craft ${batches * yieldCount} ${item}`);
+            simulated_inventory[item] = (simulated_inventory[item] || 0) + (batches * yieldCount);
+            active_resolutions.delete(item);
+            return;
+        }
+
+        // --- ROUTE D: MINING / COLLECTING (Prioritized for Natural Resources) ---
+        let blockSources = getItemBlockSources(item);
+        if (isNaturalResource || blockSources.length > 0 || mcdata.blocksByName[item]) {
+            let targetBlock = blockSources.length > 0 ? blockSources[0] : item;
+            let requiredTool = requireTool(targetBlock);
+
+            if (requiredTool !== undefined) {
+                let description = "";
+                const woodNote = targetBlock.endsWith('_log') ? " (Note: Any type of wood can be used)" : "";
+
+                if (requiredTool !== null) {
+                    // CHECK: Do we already have a tool that works?
+                    let toolToUse = getBestToolInInventory(requiredTool);
+
+                    if (!toolToUse) {
+                        // We don't have one, so we must resolve the required one
+                        resolveItem(requiredTool, 1);
+                        toolToUse = requiredTool; 
+                    }
+                    description = `Mine ${targetBlock} using ${toolToUse} to collect ${needed} ${item}${woodNote}`;
+                } else {
+                    description = `Collect ${targetBlock} by hand to get ${needed} ${item}${woodNote}`;
+                }
+                
+                addStep(description);
+                simulated_inventory[item] = (simulated_inventory[item] || 0) + needed;
+                active_resolutions.delete(item);
+                return;
+            }
+        }
+
+        // --- FINAL FALLBACK ---
+        // Catches uncraftable, unmineable items like Saddles, Name Tags, or mob loot.
+        addStep(`Obtain ${needed} ${item} (Check chests or mob drops)`);
+        simulated_inventory[item] = (simulated_inventory[item] || 0) + needed;
+        
+        active_resolutions.delete(item);
+    }
+
+    resolveItem(targetItem, count);
+
+    if (steps.length > 0) {
+        steps[0].status = "in_progress";
+    }
+
+    return JSON.stringify({ steps: steps }, null, 2);
 }

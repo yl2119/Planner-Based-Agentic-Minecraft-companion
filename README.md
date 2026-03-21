@@ -49,6 +49,11 @@ https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/v
 ```
 2) Place both files in ./src/agent/kokoro
 
+3) Ensure that ffplay is installed
+```
+https://ffmpeg.org/download.html
+```
+
 Mindcraft files:  
 1) run "npm install" in the root directory
 

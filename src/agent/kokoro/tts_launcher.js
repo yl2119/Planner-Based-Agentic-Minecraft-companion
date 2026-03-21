@@ -192,7 +192,8 @@ export class TTSService {
 
         let sysPython;
         try {
-            sysPython = isWin ? 'py' : getSystemPython();
+            
+            sysPython = isWin ? 'py' : this.getSystemPython();
         } catch (err) {
             console.error(`[${label}] No system python found:`, err.message);
             return null;
@@ -278,7 +279,7 @@ export class TTSService {
     }
 
     getSystemPython() {
-        if (isWindows) {
+        if (process.platform === 'win32') {
             try { execSync('python --version', { stdio: 'ignore' }); return 'python'; }
             catch { return 'python3'; }
         }

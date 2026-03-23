@@ -1,4 +1,3 @@
-// import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
 import path from 'path';
 
@@ -10,10 +9,6 @@ export class TaskManager {
         this.agent = agent;
         this.currentTask = null;
     }
-
-    // getTaskFilePath() {
-    //     return path.join('.', 'bots', this.agent.name, 'current_task.json');
-    // }
 
     getTaskFilePath() {
         if (this.currentTask && this.currentTask.task_id) {
@@ -68,10 +63,7 @@ export class TaskManager {
         return steps.map((step, index) => ({
             step_id: step.step_id || this.generateStepId(index),
             description: step.description.trim(),
-            status: index === 0 ? 'in_progress' : 'pending',
-            retry_count: typeof step.retry_count === 'number' ? step.retry_count : 0,
-            last_failure_reason: step.last_failure_reason ?? null,
-            last_attempt_at: step.last_attempt_at ?? null
+            status: index === 0 ? 'in_progress' : 'pending'
         }));
     }
 
@@ -169,7 +161,7 @@ export class TaskManager {
         return this.currentTask;
     }
 
-    recordStepFailure(stepId, reason = 'step attempt failed') {
+    recordStepFailure(stepId) {
         if (!this.currentTask) {
             throw new Error('no current task');
         }
@@ -180,9 +172,6 @@ export class TaskManager {
         }
 
         step.status = 'failed';
-        step.retry_count += 1;
-        step.last_failure_reason = reason;
-        step.last_attempt_at = this.nowIso();
 
         this.currentTask.status = 'in_progress';
         this.currentTask.current_step_id = stepId;
@@ -192,7 +181,7 @@ export class TaskManager {
         return this.currentTask;
     }
 
-    blockStep(stepId, reason = 'step is blocked') {
+    blockStep(stepId) {
         if (!this.currentTask) {
             throw new Error('no current task');
         }
@@ -203,8 +192,6 @@ export class TaskManager {
         }
 
         step.status = 'blocked';
-        step.last_failure_reason = reason;
-        step.last_attempt_at = this.nowIso();
 
         this.currentTask.status = 'in_progress';
         this.currentTask.current_step_id = stepId;
@@ -340,10 +327,7 @@ export class TaskManager {
                         parsed.steps = parsed.steps.map(step => ({
                             step_id: step.step_id,
                             description: step.description,
-                            status: step.status || 'pending',
-                            retry_count: typeof step.retry_count === 'number' ? step.retry_count : 0,
-                            last_failure_reason: step.last_failure_reason ?? null,
-                            last_attempt_at: step.last_attempt_at ?? null
+                            status: step.status || 'pending'
                         }));
                         parsed.failure_reason = parsed.failure_reason ?? null;
                         parsed.cancel_reason = parsed.cancel_reason ?? null;
@@ -383,31 +367,13 @@ export class TaskManager {
             if (typeof step.step_id !== 'string') return false;
             if (typeof step.description !== 'string') return false;
             if (!STEP_STATUSES.includes(step.status)) return false;
-            // if (typeof step.retry_count !== 'number') return false;
-            // if (!(typeof step.last_failure_reason === 'string' || step.last_failure_reason === null)) return false;
-            // if (!(typeof step.last_attempt_at === 'string' || step.last_attempt_at === null)) return false;
-            if (step.retry_count !== undefined && typeof step.retry_count !== 'number') return false;
         }
 
         return true;
     }
 
     formatStepLine(step) {
-        let text = `- [${step.step_id}] ${step.description}`;
-
-        if (step.retry_count > 0) {
-            text += `\n  retries: ${step.retry_count}`;
-        }
-
-        if (step.last_failure_reason) {
-            text += `\n  last failure: ${step.last_failure_reason}`;
-        }
-
-        if (step.last_attempt_at) {
-            text += `\n  last attempt: ${step.last_attempt_at}`;
-        }
-
-        return text;
+        return `- [${step.step_id}] ${step.description}`;
     }
 
     formatForPrompt() {

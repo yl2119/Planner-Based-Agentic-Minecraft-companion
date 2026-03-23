@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     print("[TTS] Warming up model...")
     try:
         # Run a short generation to load everything into GPU
-        async for _ in kokoro.create_stream("Hello", "af_heart", speed=1.0, lang="en-us"):
+        async for _ in kokoro.create_stream("Hello", "af_heart", speed=1.2, lang="en-us"):
             pass
         print("[TTS] Model ready.")
     except Exception as e:

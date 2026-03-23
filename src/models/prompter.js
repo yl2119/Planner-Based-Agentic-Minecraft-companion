@@ -149,10 +149,6 @@ export class Prompter {
         if (prompt.includes('$ACTION')) {
             prompt = prompt.replaceAll('$ACTION', this.agent.actions.currentActionLabel);
         }
-        if (prompt.includes('$TASK')) {
-            const taskInfo = this.agent.task_manager ? this.agent.task_manager.formatForPrompt() : 'No active task.';
-            prompt = prompt.replaceAll('$TASK', taskInfo);
-        }
         if (prompt.includes('$COMMAND_DOCS'))
             prompt = prompt.replaceAll('$COMMAND_DOCS', getCommandDocs(this.agent));
         if (prompt.includes('$CODE_DOCS')) {

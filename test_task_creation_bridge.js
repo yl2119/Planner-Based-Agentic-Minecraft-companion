@@ -7,9 +7,12 @@ function main() {
     const fakeAgent = { name: 'TestAgent' };
     fakeAgent.task_manager = new TaskManager(fakeAgent);
 
-    const currentTaskPath = path.join('.', 'bots', fakeAgent.name, 'current_task.json');
-    if (existsSync(currentTaskPath)) {
-        rmSync(currentTaskPath, { force: true });
+    const tasksDir = path.join('.', 'bots', fakeAgent.name, 'tasks');
+
+    // optional cleanup of old fallback file if it exists
+    const oldCurrentTaskPath = path.join(tasksDir, 'current_task.json');
+    if (existsSync(oldCurrentTaskPath)) {
+        rmSync(oldCurrentTaskPath, { force: true });
     }
 
     const fakePlanResult = {
@@ -34,18 +37,31 @@ function main() {
         throw new Error('No current task after createTaskFromPlan');
     }
 
-    if (!existsSync(currentTaskPath)) {
-        throw new Error('current_task.json was not created');
+    const taskFilePath = path.join(
+        '.',
+        'bots',
+        fakeAgent.name,
+        'tasks',
+        `${currentTask.task_id}.json`
+    );
+
+    if (!existsSync(taskFilePath)) {
+        throw new Error(`Task file was not created at ${taskFilePath}`);
     }
 
-    const fileTask = JSON.parse(readFileSync(currentTaskPath, 'utf8'));
+    const fileTask = JSON.parse(readFileSync(taskFilePath, 'utf8'));
 
     const forbiddenFields = ['retry_count', 'last_failure_reason', 'last_attempt_at'];
     const badSteps = currentTask.steps.filter(step =>
         forbiddenFields.some(field => Object.prototype.hasOwnProperty.call(step, field))
     );
 
+    console.log('\n=== CURRENT TASK ===\n');
     console.log(JSON.stringify(currentTask, null, 2));
+
+    console.log('\n=== SAVED TASK FILE ===\n');
+    console.log(taskFilePath);
+    console.log(JSON.stringify(fileTask, null, 2));
 
     if (task.task_id !== currentTask.task_id) {
         throw new Error('Returned task does not match current task');

@@ -17,9 +17,49 @@ function runAsAction (actionFn, resume = false, timeout = -1) {
         const actionFnWithAgent = async () => {
             await actionFn(agent, ...args);
         };
-        const code_return = await agent.actions.runAction(`action:${actionLabel}`, actionFnWithAgent, { timeout, resume });
+        const code_return = await agent.actions.runAction(
+            `action:${actionLabel}`,
+            actionFnWithAgent,
+            { timeout, resume }
+        );
+
+        const currentTask = agent.task_manager?.getCurrentTask();
+        const currentStep = agent.task_manager?.getCurrentStep();
+
+        const taskRelevantActions = new Set([
+            'goToPlayer',
+            'goToCoordinates',
+            'searchForBlock',
+            'searchForEntity',
+            'collectBlocks',
+            'craftRecipe',
+            'smeltItem',
+            'attack',
+            'goToRoom',
+            'goToBed',
+            'digDown',
+            'goToSurface',
+            'useOn'
+        ]);
+
+        if (
+            taskRelevantActions.has(actionLabel) &&
+            currentTask &&
+            currentStep &&
+            currentTask.status === 'in_progress'
+        ) {
+            if (code_return.success) {
+                agent.task_manager.updateStepStatus(currentStep.step_id, 'completed');
+            } else if (code_return.timedout) {
+                agent.task_manager.blockStep(currentStep.step_id);
+            } else if (!code_return.interrupted) {
+                agent.task_manager.recordStepFailure(currentStep.step_id);
+            }
+        }
+
         if (code_return.interrupted && !code_return.timedout)
             return;
+
         return code_return.message;
     }
 
@@ -548,35 +588,19 @@ export const actionsList = [
     },
     {
         name: '!failStep',
-        description: 'Mark the current task step as failed with a reason.',
-        params: {
-            'reason': {type: 'string', description: 'Why the step failed.'}
-        },
-        perform: async function(agent, reason) {
+        description: 'Mark the current task step as failed.',
+        perform: async function(agent, reason = 'step failed') {
+            if (!agent.task_manager) {
+                return 'TaskManager not available.';
+            }
+
             const step = agent.task_manager.getCurrentStep();
-            if (!step) return 'No active task step to fail.';
-            agent.task_manager.recordStepFailure(step.step_id, reason);
-            return `Step "${step.description}" failed (attempt ${step.retry_count + 1}): ${reason}`;
-        }
-    },
-    {
-        name: '!cancelTask',
-        description: 'Cancel the current task.',
-        params: {
-            'reason': {type: 'string', description: 'Why the task is being cancelled.'}
-        },
-        perform: async function(agent, reason) {
-            if (!agent.task_manager.getCurrentTask()) return 'No active task to cancel.';
-            agent.task_manager.cancelTask(reason);
-            return `Task cancelled: ${reason}`;
-        }
-    },
-    {
-        name: '!viewTask',
-        description: 'View the current task status and all steps.',
-        params: {},
-        perform: async function(agent) {
-            return agent.task_manager.formatForPrompt();
+            if (!step) {
+                return 'No active task step to fail.';
+            }
+
+            agent.task_manager.recordStepFailure(step.step_id);
+            return `Step "${step.description}" failed: ${reason}`;
         }
     },
     

@@ -971,6 +971,171 @@ export async function viewChest(bot) {
     return true;
 }
 
+export async function scanChests(bot, range=64) {
+    /**
+     * Scan the surrounding area for all chests and return a list of them with their positions and contents summary.
+     * @param {MinecraftBot} bot, reference to the minecraft bot.
+     * @param {number} range, the search radius in blocks. Defaults to 64.
+     * @returns {Promise<Array>} Array of chest info objects: { index, x, y, z, distance, items }.
+     *                          Returns empty array if no chests found.
+     * @example
+     * let chests = await skills.scanChests(bot, 64);
+     **/
+    const chestBlocks = world.getNearestBlocksWhere(
+        bot,
+        block => block.name === 'chest' || block.name === 'trapped_chest',
+        range,
+        64
+    );
+ 
+    if (!chestBlocks || chestBlocks.length === 0) {
+        log(bot, `No chests found within ${range} blocks.`);
+        return [];
+    }
+ 
+    const botPos = bot.entity.position;
+    const chestList = [];
+ 
+    log(bot, `Found ${chestBlocks.length} chest(s) within ${range} blocks:`);
+ 
+    for (let i = 0; i < chestBlocks.length; i++) {
+        const chestBlock = chestBlocks[i];
+        const pos = chestBlock.position;
+        const distance = Math.round(botPos.distanceTo(pos));
+ 
+        let itemSummary = [];
+        try {
+            await goToPosition(bot, pos.x, pos.y, pos.z, 2);
+            const container = await bot.openContainer(chestBlock);
+            const items = container.containerItems();
+            if (items.length === 0) {
+                itemSummary = ['empty'];
+            } else {
+
+                const counts = {};
+                for (const item of items) {
+                    counts[item.name] = (counts[item.name] || 0) + item.count;
+                }
+                itemSummary = Object.entries(counts).map(([name, count]) => `${count} ${name}`);
+            }
+            await container.close();
+        } catch (err) {
+            itemSummary = ['could not open'];
+        }
+ 
+        const info = {
+            index: i + 1,
+            x: pos.x,
+            y: pos.y,
+            z: pos.z,
+            distance,
+            items: itemSummary
+        };
+        chestList.push(info);
+ 
+        log(bot, `Chest ${i + 1}: (${pos.x}, ${pos.y}, ${pos.z}) ~${distance} blocks away — ${itemSummary.join(', ')}`);
+ 
+        if (bot.interrupt_code) break;
+    }
+ 
+    return chestList;
+}
+ 
+export async function interactWithChest(bot, x, y, z, action, itemName=null, num=-1) {
+    /**
+     * Interact with a specific chest at the given coordinates.
+     * @param {MinecraftBot} bot, reference to the minecraft bot.
+     * @param {number} x, the x coordinate
+     * @param {number} y, the y coordinate
+     * @param {number} z, the z coordinate
+     * @param {string} action, what to do: "view", "take", or "put".
+     * @param {string} itemName, the item to take/put.
+     * @param {number} num, the number of items to take/put. -1 means all.
+     * @returns {Promise<boolean>} true if the action succeeded, false otherwise.
+     * @example
+        * await skills.interactWithChest(bot, 100, 64, 100, "take", "oak_log", 5);
+     **/
+    const Vec3Pos = Vec3(x, y, z);
+    const chestBlock = bot.blockAt(Vec3Pos);
+ 
+    if (!chestBlock || (chestBlock.name !== 'chest' && chestBlock.name !== 'trapped_chest')) {
+        log(bot, `No chest found at (${x}, ${y}, ${z}). Use !scanChests to find chest coordinates first.`);
+        return false;
+    }
+ 
+    await goToPosition(bot, x, y, z, 2);
+ 
+    const container = await bot.openContainer(chestBlock);
+ 
+    if (action === 'view') {
+        const items = container.containerItems();
+        if (items.length === 0) {
+            log(bot, `Chest at (${x}, ${y}, ${z}) is empty.`);
+        } else {
+            log(bot, `Chest at (${x}, ${y}, ${z}) contains:`);
+            const counts = {};
+            for (const item of items) {
+                counts[item.name] = (counts[item.name] || 0) + item.count;
+            }
+            for (const [name, count] of Object.entries(counts)) {
+                log(bot, `  ${count} ${name}`);
+            }
+        }
+        await container.close();
+        return true;
+    }
+ 
+    if (action === 'take') {
+        if (!itemName) {
+            log(bot, `Must specify an item name to take from the chest.`);
+            await container.close();
+            return false;
+        }
+        const matchingItems = container.containerItems().filter(item => item.name === itemName);
+        if (matchingItems.length === 0) {
+            log(bot, `No ${itemName} found in chest at (${x}, ${y}, ${z}).`);
+            await container.close();
+            return false;
+        }
+        const totalAvailable = matchingItems.reduce((sum, item) => sum + item.count, 0);
+        let remaining = num === -1 ? totalAvailable : Math.min(num, totalAvailable);
+        let totalTaken = 0;
+        for (const item of matchingItems) {
+            if (remaining <= 0) break;
+            const toTake = Math.min(remaining, item.count);
+            await container.withdraw(item.type, null, toTake);
+            totalTaken += toTake;
+            remaining -= toTake;
+        }
+        await container.close();
+        log(bot, `Took ${totalTaken} ${itemName} from chest at (${x}, ${y}, ${z}).`);
+        return totalTaken > 0;
+    }
+ 
+    if (action === 'put') {
+        if (!itemName) {
+            log(bot, `Must specify an item name to put in the chest.`);
+            await container.close();
+            return false;
+        }
+        const invItem = bot.inventory.items().find(item => item.name === itemName);
+        if (!invItem) {
+            log(bot, `You do not have any ${itemName} to put in the chest.`);
+            await container.close();
+            return false;
+        }
+        const toPut = num === -1 ? invItem.count : Math.min(num, invItem.count);
+        await container.deposit(invItem.type, null, toPut);
+        await container.close();
+        log(bot, `Put ${toPut} ${itemName} into chest at (${x}, ${y}, ${z}).`);
+        return true;
+    }
+ 
+    log(bot, `Unknown action "${action}". Use "view", "take", or "put".`);
+    await container.close();
+    return false;
+}
+
 export async function consume(bot, itemName="") {
     /**
      * Eat/drink the given item.

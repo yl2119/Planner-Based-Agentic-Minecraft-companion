@@ -63,7 +63,7 @@
         ],
         [
             { "role": "user", "content": "player3: Go to those coordinates 120 65 -30." },
-            { "role": "assistant", "content": "!goToCoordinates(120, 65, -30)" }
+            { "role": "assistant", "content": "!goToCoordinates(120, 65, -30, 1)" }
         ],
         [
             { "role": "user", "content": "player4: Come to me." },
@@ -71,7 +71,7 @@
         ],
         [
             { "role": "user", "content": "player5: Mine the stone in front of you." },
-            { "role": "assistant", "content": "!collectBlocks('stone', 1)" }
+            { "role": "assistant", "content": "Ill mine the stone!!collectBlocks('stone', 1)" }
         ],
         [
             { "role": "user", "content": "player6: Chop down nearby oak logs." },
@@ -312,6 +312,23 @@
         [
             { "role": "system", "content": "Action output:\nStep \"Collect wool\" completed. Next: [step_2] Craft 4 white_bed" },
             { "role": "assistant", "content": "Resource step complete. !completeStep" }
+        ],
+        [
+            { "role": "user", "content": "player1: Search for diamond ore." },
+            { "role": "assistant", "content": "!searchForBlock('diamond_ore', 32)" }
+        ],
+        [
+            { "role": "system", "content": "Found diamond_ore at coordinates: x: 245, y: 12, z: -156" },
+            { "role": "assistant", "content": "Found it at 245, 12, -156. Want me to go there?" }
+        ],
+        [
+            { "role": "user", "content": "player2: Find me lapis ore." },
+            { "role": "assistant", "content": "!searchForBlock('lapis_ore', 32)" }
+        ],
+        [
+            { "role": "system", "content": "No lapis_ore found within 128 blocks." },
+            { "role": "assistant", "content": "Couldn't find any lapis ore nearby. Try searching elsewhere?" }
         ]
+        
     ]
 }

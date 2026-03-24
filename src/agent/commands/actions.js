@@ -280,6 +280,31 @@ export const actionsList = [
         })
     },
     {
+        name: '!scanChests',
+        description: 'Scan the area for all nearby chests and list their positions and contents. Use this before !interactWithChest to find chest coordinates.',
+        params: {
+            'range': { type: 'float', description: 'The radius in blocks to search for chests. Minimum 8, maximum 128.', domain: [8, 128] }
+        },
+        perform: runAsAction(async (agent, range) => {
+            await skills.scanChests(agent.bot, range);
+        })
+    },
+    {
+        name: '!interactWithChest',
+        description: 'Interact with a specific chest at exact coordinates. Use !scanChests first to find chest positions. Supports viewing contents, taking items, or putting items in.',
+        params: {
+            'x': { type: 'int', description: 'The x coordinate of the chest.', domain: [-Infinity, Infinity] },
+            'y': { type: 'int', description: 'The y coordinate of the chest.', domain: [-64, 320] },
+            'z': { type: 'int', description: 'The z coordinate of the chest.', domain: [-Infinity, Infinity] },
+            'action': { type: 'string', description: 'What to do with the chest: "view" to see contents, "take" to withdraw an item, "put" to deposit an item.' },
+            'item_name': { type: 'ItemName', description: 'The name of the item to take or put. Required for "take" and "put" actions, ignored for "view".' },
+            'num': { type: 'int', description: 'The number of items to take or put. Use -1 to take/put all. Defaults to -1.', domain: [-1, Number.MAX_SAFE_INTEGER] }
+        },
+        perform: runAsAction(async (agent, x, y, z, action, item_name, num) => {
+            await skills.interactWithChest(agent.bot, x, y, z, action, item_name, num);
+        })
+    },
+    {
         name: '!discard',
         description: 'Discard the given item from the inventory.',
         params: {

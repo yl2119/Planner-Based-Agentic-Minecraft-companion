@@ -23,39 +23,39 @@ function runAsAction (actionFn, resume = false, timeout = -1) {
             { timeout, resume }
         );
 
-        const currentTask = agent.task_manager?.getCurrentTask();
-        const currentStep = agent.task_manager?.getCurrentStep();
+        // const currentTask = agent.task_manager?.getCurrentTask();
+        // const currentStep = agent.task_manager?.getCurrentStep();
 
-        const taskRelevantActions = new Set([
-            'goToPlayer',
-            'goToCoordinates',
-            'searchForBlock',
-            'searchForEntity',
-            'collectBlocks',
-            'craftRecipe',
-            'smeltItem',
-            'attack',
-            'goToRoom',
-            'goToBed',
-            'digDown',
-            'goToSurface',
-            'useOn'
-        ]);
+        // const taskRelevantActions = new Set([
+        //     'goToPlayer',
+        //     'goToCoordinates',
+        //     'searchForBlock',
+        //     'searchForEntity',
+        //     'collectBlocks',
+        //     'craftRecipe',
+        //     'smeltItem',
+        //     'attack',
+        //     'goToRoom',
+        //     'goToBed',
+        //     'digDown',
+        //     'goToSurface',
+        //     'useOn'
+        // ]);
 
-        if (
-            taskRelevantActions.has(actionLabel) &&
-            currentTask &&
-            currentStep &&
-            currentTask.status === 'in_progress'
-        ) {
-            if (code_return.success) {
-                agent.task_manager.updateStepStatus(currentStep.step_id, 'completed');
-            } else if (code_return.timedout) {
-                agent.task_manager.blockStep(currentStep.step_id);
-            } else if (!code_return.interrupted) {
-                agent.task_manager.recordStepFailure(currentStep.step_id);
-            }
-        }
+        // if (
+        //     taskRelevantActions.has(actionLabel) &&
+        //     currentTask &&
+        //     currentStep &&
+        //     currentTask.status === 'in_progress'
+        // ) {
+        //     if (code_return.success) {
+        //         agent.task_manager.updateStepStatus(currentStep.step_id, 'completed');
+        //     } else if (code_return.timedout) {
+        //         agent.task_manager.blockStep(currentStep.step_id);
+        //     } else if (!code_return.interrupted) {
+        //         agent.task_manager.recordStepFailure(currentStep.step_id);
+        //     }
+        // }
 
         if (code_return.interrupted && !code_return.timedout)
             return;

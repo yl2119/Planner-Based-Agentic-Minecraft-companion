@@ -228,6 +228,16 @@ export class Prompter {
 
             let prompt = this.profile.conversing;
             prompt = await this.replaceStrings(prompt, messages, this.convo_examples);
+            
+            // Add current task message to messages if there's an active step
+            const currentStep = this.agent.task_manager.getCurrentStep();
+            if (currentStep) {
+                messages.push({
+                    role: 'system',
+                    content: `Continue with the current task (DO NOT CREATE NEW TASK)`
+                });
+            }
+            
             let generation;
 
             try {

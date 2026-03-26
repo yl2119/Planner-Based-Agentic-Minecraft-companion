@@ -643,10 +643,10 @@ export class TaskManager {
         const currentStep = this.getCurrentStep();
 
         const lines = [
-            'Active Task:',
+            `Active Task: True`,
             `Goal: ${task.goal}`,
-            `Status: ${task.status}`,
-            `Current Step: ${currentStep ? `[${currentStep.step_id}] ${currentStep.description}` : 'None'}`
+            `Step ID: ${currentStep.step_id}`,
+            `Current Step Goal: ${currentStep ? `${currentStep.description}` : 'None'}`
         ];
 
         if (task.failure_reason) {

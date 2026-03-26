@@ -93,7 +93,7 @@ async def tts_endpoint(payload: dict):
     voice = payload.get("voice", "af_heart")
     speed = float(payload.get("speed", 1.0))
     lang = payload.get("lang", "en-us")
-
+    
     if not text:
         raise HTTPException(status_code=400, detail="text is required")
 

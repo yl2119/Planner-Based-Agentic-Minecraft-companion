@@ -279,50 +279,6 @@
             { "role": "assistant", "content": "I'm on it! !createTask('honey_bottle', 1, \"Collecting a honey bottle for the player\")" }
         ],
         [
-            { "role": "user", "content": "player2: Scan for all chests nearby." },
-            { "role": "assistant", "content": "Scanning now! !scanChests(64)" }
-        ],
-        [
-            { "role": "user", "content": "player1: Look inside the chest at 10 64 -30." },
-            { "role": "assistant", "content": "!interactWithChest(10, 64, -30, \"view\", null, -1)" }
-        ],
-        [
-            { "role": "user", "content": "player2: Take 2 diamonds from the chest at -5 64 -15." },
-            { "role": "assistant", "content": "!interactWithChest(-5, 64, -15, \"take\", \"diamond\", 2)" }
-        ],
-        [
-            { "role": "user", "content": "player2: Put all your oak logs into the chest at 25 64 -30." },
-            { "role": "assistant", "content": "Depositing now! !interactWithChest(25, 64, -30, \"put\", \"oak_log\", -1)" }
-        ],
-        [
-            { "role": "user", "content": "player2: Find a chest with diamonds and take them." },
-            { "role": "assistant", "content": "Let me scan first. !scanChests(64)" },
-            { "role": "system", "content": "Action output:\nFound 2 chest(s) within 64 blocks:\nChest 1: (10, 64, -30) ~12 blocks away — 64 oak_log\nChest 2: (-5, 64, -15) ~18 blocks away — 16 diamond, 8 iron_ingot" },
-            { "role": "assistant", "content": "Found diamonds in chest 2! !interactWithChest(-5, 64, -15, \"take\", \"diamond\", -1)" }
-        ],
-        [
-            { "role": "user", "content": "player2: Which chests are nearby and what do they have?" },
-            { "role": "assistant", "content": "Checking now! !scanChests(32)" }
-        ],
-        [
-            { "role": "user", "content": "player2: Go to the chest at 15 64 -20, take 5 iron ingots, and put them in the chest at 30 64 -10." },
-            { "role": "assistant", "content": "!interactWithChest(15, 64, -20, \"take\", \"iron_ingot\", 5)" },
-            { "role": "assistant", "content": "!goToCoordinates(30, 64, -10)" },
-            { "role": "assistant", "content": "!interactWithChest(30, 64, -10, \"put\", \"iron_ingot\", 5)" }
-        ],
-        [
-            { "role": "user", "content": "player4: Let's work together on a campfire area. You gather cobblestone while I collect logs." },
-            { "role": "assistant", "content": "Great teamwork—I’ll handle the stone part first. !createTask('cobblestone', 16, \"Co-op split: gather cobblestone for campfire area\")" }
-        ],
-        [
-            { "role": "user", "content": "player5: We need glass for windows. Please handle sand while I build the frame." },
-            { "role": "assistant", "content": "Perfect split—I’ll gather the sand now. !createTask('sand', 24, \"Co-op split: collect sand for glass windows\")" }
-        ],
-        [
-            { "role": "system", "content": "Action output:\nStep \"Collect 24 sand\" completed. Next: [step_2] Smelt 24 glass" },
-            { "role": "assistant", "content": "Nice progress. !completeStep" }
-        ],
-        [
             { "role": "user", "content": "player52: Let’s split this build—get me 32 spruce_planks while I place walls." },
             { "role": "assistant", "content": "Sounds good, I’ll do the materials side. !createTask('spruce_planks', 32, \"Co-op split: craft spruce planks for wall build\")" }
         ],
@@ -356,10 +312,6 @@
         [
             { "role": "system", "content": "Action output:\nStep \"Craft 1 chest\" completed. All steps done! Task finished." },
             { "role": "assistant", "content": "Great, dependency solved—I'll continue the original objective now. !createTask('hopper', 2, \"Resume co-op chain after chest dependency recovery\")" }
-        ],
-        [
-            { "role": "user", "content": "player9: Bigger base task—make 4 beds, 2 chests, and 1 enchanting_table. You do resources, I decorate." },
-            { "role": "assistant", "content": "Awesome co-op objective—I’ll split this into manageable task chunks and start with beds. !createTask('white_bed', 4, \"Co-op base setup chunk 1: craft 4 beds\")" }
         ],
         [
             { "role": "system", "content": "Action output:\nStep \"Collect wool\" completed. Next: [step_2] Craft 4 white_bed" },
@@ -416,6 +368,10 @@
         [
             { "role": "user", "content": "player64: Let's work together on a campfire area. You gather cobblestone while I collect logs." },
             { "role": "assistant", "content": "Great teamwork—I’ll handle the stone part first. !createTask('cobblestone', 16, \"Co-op split: gather cobblestone for campfire area\")" }
+        ],
+        [
+            { "role": "user", "content": "player65: Bigger base task—make 4 beds, 2 chests, and 1 enchanting_table. You do resources, I decorate." },
+            { "role": "assistant", "content": "Awesome co-op objective—I’ll split this into manageable task chunks and start with beds. !createTask('white_bed', 4, \"Co-op base setup chunk 1: craft 4 beds\")" }
         ]
     ]
 }

@@ -417,9 +417,9 @@ export const actionsList = [
         perform: runAsAction(async (agent, item_name, num) => {
             let success = await skills.smeltItem(agent.bot, item_name, num);
             if (success) {
-                setTimeout(() => {
-                    agent.cleanKill('Safely restarting to update inventory.');
-                }, 500);
+                skills.log(agent.bot, `Successfully smelted ${num} ${item_name}. Check inventory to confirm.`);
+            } else {
+                skills.log(agent.bot, `Failed to smelt ${item_name}.`);
             }
         })
     },
@@ -437,7 +437,12 @@ export const actionsList = [
         params: {'type': { type: 'BlockOrItemName', description: 'The block type to place.' }},
         perform: runAsAction(async (agent, type) => {
             let pos = agent.bot.entity.position;
-            await skills.placeBlock(agent.bot, type, pos.x, pos.y, pos.z);
+            const success = await skills.placeBlock(agent.bot, type, pos.x, pos.y, pos.z);
+            if (success) {
+                skills.log(agent.bot, `Successfully placed ${type}.`);
+            } else {
+                skills.log(agent.bot, `Failed to place ${type}.`);
+            }
         })
     },
     {
@@ -736,5 +741,24 @@ export const actionsList = [
             return `Step "${step.description}" marked as failed: ${reason}. Task "${task.goal}" remains active on this step.`;
         }
     },
-    
+        {
+        name: '!replaceStep',
+        description: 'Replace the current task step with a new approach. Use when the current step is impossible or the player suggests a better method.',
+        params: {
+            'new_description': { type: 'string', description: 'The new step description to replace the current one with.' }
+        },
+        perform: async function(agent, new_description) {
+            if (!agent.task_manager) {
+                return 'TaskManager not available.';
+            }
+            const step = agent.task_manager.getCurrentStep();
+            if (!step) {
+                return 'No active task step to replace.';
+            }
+            const old = step.description;
+            agent.task_manager.replaceCurrentStep(new_description);
+            return `Step replaced: "${old}" -> "${new_description}"`;
+        }
+    },
+        
 ];

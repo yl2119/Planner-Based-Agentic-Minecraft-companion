@@ -417,9 +417,9 @@ export const actionsList = [
         perform: runAsAction(async (agent, item_name, num) => {
             let success = await skills.smeltItem(agent.bot, item_name, num);
             if (success) {
-                setTimeout(() => {
-                    agent.cleanKill('Safely restarting to update inventory.');
-                }, 500);
+                skills.log(agent.bot, `Successfully smelted ${num} ${item_name}. Check inventory to confirm.`);
+            } else {
+                skills.log(agent.bot, `Failed to smelt ${item_name}.`);
             }
         })
     },
@@ -437,7 +437,12 @@ export const actionsList = [
         params: {'type': { type: 'BlockOrItemName', description: 'The block type to place.' }},
         perform: runAsAction(async (agent, type) => {
             let pos = agent.bot.entity.position;
-            await skills.placeBlock(agent.bot, type, pos.x, pos.y, pos.z);
+            const success = await skills.placeBlock(agent.bot, type, pos.x, pos.y, pos.z);
+            if (success) {
+                skills.log(agent.bot, `Successfully placed ${type}.`);
+            } else {
+                skills.log(agent.bot, `Failed to place ${type}.`);
+            }
         })
     },
     {

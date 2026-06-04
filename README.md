@@ -1,4 +1,4 @@
-# Games 4 MC Companion
+# Janet Minecraft companion
 
 ## What is this project?
 

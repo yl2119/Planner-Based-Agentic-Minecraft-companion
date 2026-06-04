@@ -1,27 +1,14 @@
 # Games 4 MC Companion
 
-## Cloning code
+## What is this project?
 
-1) Make a fork on this repository
-2) Clone your fork to your computer
-
-## Pushing code
-
-1) Push the code back to your own fork
-2) Create a merge request (then I'll look through the changes and approve)
+This project forks [Mindcraft](https://github.com/mindcraft-bots/mindcraft), an embedded agentic framework designed for LLM interaction in Minecraft. Our work introduces "Janet," an agent enhanced with a planner and task-management capabilities. We evaluate Janet's performance relative to the baseline agent, "Andy," to investigate the efficacy of structured planning in agentic frameworks.
 
 ## Change Model to gpt-4o-mini
 
 1) Open:janet.js
 - Find the model configuration and change it to: "model": "gpt-4o-mini"
 - Locate the embedding configuration. It should be set to: "embedding": "openai"
-
-If you cannot find the embedding configuration:
-Check behind the "saving_memory" logic
-Someone may have accidentally moved it there
-Or search the project for:
-embedding
-
 
 2) Add Your OpenAI API Key, go to the file: keys.example.json
 

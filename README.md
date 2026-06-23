@@ -86,12 +86,20 @@ npm install
 > 首次运行时会自动创建 Python 虚拟环境并安装 TTS 依赖（包括 PyTorch ~2.5GB）。TTS 源码已捆绑在项目中，无需 GitHub 访问。
 > *First run auto-creates a Python venv and installs TTS deps (incl. PyTorch ~2.5GB). TTS source is bundled — no GitHub needed.*
 
-### 3. 国内用户设置 HuggingFace 镜像 / China Users: Set HF Mirror
+### 3. 国内用户下载模型 / China Users: Download Models
 
-TTS 模型首次运行需从 HuggingFace 下载（~500MB，仅一次） / *Models download from HuggingFace on first run (~500MB, one-time)*：
+TTS 模型首次运行需从 HuggingFace 下载（~500MB，仅一次） / *Models download from HuggingFace on first run (~500MB, one-time)*。
+
+**方式一：使用国内镜像 / Method 1 — HF Mirror**：
 
 ```bash
 export HF_ENDPOINT=https://hf-mirror.com
+```
+
+**方式二：使用网络代理 / Method 2 — Proxy**：
+
+```bash
+export HTTPS_PROXY=http://127.0.0.1:7890  # 替换为你的代理地址
 ```
 
 ### 4. TTS 参考音频 / TTS Reference Audio

@@ -2,7 +2,7 @@ fastapi
 uvicorn[standard]
 numpy
 soundfile
-onnxruntime>=1.20.0
+onnxruntime-gpu>=1.20.0
 WeTextProcessing
 
 # MOSS-TTS-Nano bundled locally (no GitHub access needed)

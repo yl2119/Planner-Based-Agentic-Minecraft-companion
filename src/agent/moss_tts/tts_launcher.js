@@ -272,8 +272,9 @@ export class TTSService {
                     const both = execSync(`"${venvPython}" -m pip list 2>/dev/null | grep -E "^onnxruntime "`, { encoding: 'utf-8' });
                     const gpu = execSync(`"${venvPython}" -m pip list 2>/dev/null | grep -E "^onnxruntime-gpu "`, { encoding: 'utf-8' });
                     if (both && gpu) {
-                        console.log(`[${label}] Removing CPU onnxruntime (GPU version installed)...`);
-                        execSync(`"${venvPython}" -m pip uninstall -y onnxruntime`, { cwd: componentDir, stdio: 'inherit' });
+                        console.log(`[${label}] Removing CPU onnxruntime + restoring GPU version...`);
+                        execSync(`"${venvPython}" -m pip uninstall -y onnxruntime onnxruntime-gpu`, { cwd: componentDir, stdio: 'inherit' });
+                        execSync(`"${venvPython}" -m pip install --no-deps onnxruntime-gpu==1.26.0`, { cwd: componentDir, stdio: 'inherit' });
                     }
                 } catch {}
             }

@@ -32,5 +32,5 @@ src/mindcraft-py/__pycache__/
 *.bin
 .venv/
 node_modules/
-
+videos/
 models/

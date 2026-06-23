@@ -429,10 +429,24 @@ export class Agent {
         }
         else {
             if (settings.speak) {
+                // Strip markdown formatting before TTS for clean speech
+                let speak_text = to_translate
+                    .replace(/\*\*(.+?)\*\*/g, '$1')   // bold
+                    .replace(/__(.+?)__/g, '$1')         // underline
+                    .replace(/\*(.+?)\*/g, '$1')         // italic
+                    .replace(/`{1,3}[^`]*`{1,3}/g, '')  // inline code
+                    .replace(/~~(.+?)~~/g, '$1')         // strikethrough
+                    .replace(/^#{1,6}\s+/gm, '')         // markdown headers
+                    .replace(/\[(.+?)\]\(.+?\)/g, '$1')  // links
+                    .replace(/^\s*[-*+]\s+/gm, '')       // bullet points
+                    .replace(/\n{2,}/g, '，')            // double newlines → pause
+                    .replace(/\n/g, '')                   // single newlines → remove
+                    .replace(/\s{2,}/g, ' ')              // multiple spaces
+                    .trim();
                 if (this.prompter.profile.speak_model === "kokoro" || this.prompter.profile.speak_model?.startsWith("moss_tts")){
-                    this.tts.speak(to_translate)
+                    this.tts.speak(speak_text)
                 }else{
-                    speak(to_translate, this.prompter.profile.speak_model);
+                    speak(speak_text, this.prompter.profile.speak_model);
                 }
             }
             if (settings.chat_ingame) {this.bot.chat(message);}

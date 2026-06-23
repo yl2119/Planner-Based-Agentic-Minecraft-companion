@@ -48,13 +48,13 @@ const modes_list = [
             }
             else if (block.name === 'lava' || block.name === 'fire' ||
                 blockAbove.name === 'lava' || blockAbove.name === 'fire') {
-                say(agent, 'I\'m on fire!');
+                say(agent, '着火了！');
                 // if you have a water bucket, use it
                 let waterBucket = bot.inventory.items().find(item => item.name === 'water_bucket');
                 if (waterBucket) {
                     execute(this, agent, async () => {
                         let success = await skills.placeBlock(bot, 'water_bucket', block.position.x, block.position.y, block.position.z);
-                        if (success) say(agent, 'Placed some water, ahhhh that\'s better!');
+                        if (success) say(agent, '放点水灭火，舒服多了！');
                     });
                 }
                 else {
@@ -62,14 +62,14 @@ const modes_list = [
                         let waterBucket = bot.inventory.items().find(item => item.name === 'water_bucket');
                         if (waterBucket) {
                             let success = await skills.placeBlock(bot, 'water_bucket', block.position.x, block.position.y, block.position.z);
-                            if (success) say(agent, 'Placed some water, ahhhh that\'s better!');
+                            if (success) say(agent, '放点水灭火，舒服多了！');
                             return;
                         }
                         let nearestWater = world.getNearestBlock(bot, 'water', 20);
                         if (nearestWater) {
                             const pos = nearestWater.position;
                             let success = await skills.goToPosition(bot, pos.x, pos.y, pos.z, 0.2);
-                            if (success) say(agent, 'Found some water, ahhhh that\'s better!');
+                            if (success) say(agent, '找到水了，得救了！');
                             return;
                         }
                         await skills.moveAway(bot, 5);
@@ -77,7 +77,7 @@ const modes_list = [
                 }
             }
             else if (Date.now() - bot.lastDamageTime < 3000 && (bot.health < 5 || bot.lastDamageTaken >= bot.health)) {
-                say(agent, 'I\'m dying!');
+                say(agent, '我要死了！');
                 execute(this, agent, async () => {
                     await skills.moveAway(bot, 20);
                 });
@@ -120,13 +120,13 @@ const modes_list = [
             }
             const max_stuck_time = cur_dig_block?.name === 'obsidian' ? this.max_stuck_time * 2 : this.max_stuck_time;
             if (this.stuck_time > max_stuck_time) {
-                say(agent, 'I\'m stuck!');
+                say(agent, '我卡住了！');
                 this.stuck_time = 0;
                 execute(this, agent, async () => {
                     const crashTimeout = setTimeout(() => { agent.cleanKill("Got stuck and couldn't get unstuck") }, 10000);
                     await skills.moveAway(bot, 5);
                     clearTimeout(crashTimeout);
-                    say(agent, 'I\'m free.');
+                    say(agent, '我自由了。');
                     await new Promise(resolve => setTimeout(resolve, 3000));
                 });
             }
@@ -147,7 +147,7 @@ const modes_list = [
         update: async function (agent) {
             const enemy = world.getNearestEntityWhere(agent.bot, entity => mc.isHostile(entity), 16);
             if (enemy && await world.isClearPath(agent.bot, enemy)) {
-                say(agent, `Aaa! A ${enemy.name.replace("_", " ")}!`);
+                say(agent, `啊！有${enemy.name.replace("_", " ")}！`);
                 execute(this, agent, async () => {
                     await skills.avoidEnemies(agent.bot, 24);
                 });
@@ -163,7 +163,7 @@ const modes_list = [
         update: async function (agent) {
             const enemy = world.getNearestEntityWhere(agent.bot, entity => mc.isHostile(entity), 8);
             if (enemy && await world.isClearPath(agent.bot, enemy)) {
-                say(agent, `Fighting ${enemy.name}!`);
+                say(agent, `正在与${enemy.name}战斗！`);
                 execute(this, agent, async () => {
                     await skills.defendSelf(agent.bot, 8);
                 });
@@ -180,7 +180,7 @@ const modes_list = [
             const huntable = world.getNearestEntityWhere(agent.bot, entity => mc.isHuntable(entity), 8);
             if (huntable && await world.isClearPath(agent.bot, huntable)) {
                 execute(this, agent, async () => {
-                    say(agent, `Hunting ${huntable.name}!`);
+                    say(agent, `正在狩猎${huntable.name}！`);
                     await skills.attackEntity(agent.bot, huntable);
                 });
             }
@@ -204,7 +204,7 @@ const modes_list = [
                     this.noticed_at = Date.now();
                 }
                 if (Date.now() - this.noticed_at > this.wait * 1000) {
-                    say(agent, `Picking up item!`);
+                    say(agent, `捡起物品！`);
                     this.prev_item = item;
                     execute(this, agent, async () => {
                         await skills.pickupNearbyItems(agent.bot);

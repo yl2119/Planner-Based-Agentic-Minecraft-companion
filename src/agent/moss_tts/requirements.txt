@@ -1,4 +1,4 @@
 fastapi
 uvicorn[standard]
 numpy
-moss-tts-nano
+git+https://github.com/OpenMOSS/MOSS-TTS-Nano.git

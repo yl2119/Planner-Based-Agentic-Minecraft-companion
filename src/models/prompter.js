@@ -83,11 +83,16 @@ export class Prompter {
                 embedding_model_profile = null;
             }
         }
-        if (embedding_model_profile) {
-            this.embedding_model = createModel(embedding_model_profile);
-        }
-        else {
-            this.embedding_model = createModel({api: chat_model_profile.api});
+        try {
+            if (embedding_model_profile) {
+                this.embedding_model = createModel(embedding_model_profile);
+            }
+            else {
+                this.embedding_model = createModel({api: chat_model_profile.api});
+            }
+        } catch (e) {
+            console.warn(`Embedding model not available (${e.message}), running without embeddings.`);
+            this.embedding_model = null;
         }
 
         this.skill_libary = new SkillLibrary(agent, this.embedding_model);

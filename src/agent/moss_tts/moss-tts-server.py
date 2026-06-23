@@ -12,6 +12,17 @@
 # For users in China, set HF_ENDPOINT=https://hf-mirror.com
 
 import os
+import sys
+
+# Inject venv's CUDA 12 libraries so onnxruntime-gpu works without system CUDA toolkit
+_server_dir = os.path.dirname(os.path.abspath(__file__))
+_venv_lib = os.path.join(_server_dir, ".venv", "lib", f"python3.{sys.version_info.minor}", "site-packages")
+_cuda_lib = os.path.join(_venv_lib, "nvidia", "cuda_runtime", "lib")
+if os.path.isdir(_cuda_lib) and not os.environ.get("_MOSS_TTS_LD_FIXED"):
+    os.environ["_MOSS_TTS_LD_FIXED"] = "1"
+    os.environ["LD_LIBRARY_PATH"] = _cuda_lib + ":" + os.environ.get("LD_LIBRARY_PATH", "")
+    os.execve(sys.executable, [sys.executable] + sys.argv, os.environ)
+
 import re
 import sys
 import io

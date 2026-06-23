@@ -13,13 +13,13 @@
 | 组件 Component | 原版 Original | 中文版 Chinese Edition |
 |------|------|--------|
 | 🎤 **语音输入 ASR** | faster-whisper (English) | faster-whisper → **中文普通话 Mandarin** |
-| 🔊 **语音输出 TTS** | Kokoro (English only) | **MOSS-TTS-Nano** → 中文语音克隆 (本地捆绑，无需 GitHub) |
-| 🧠 **大语言模型 LLM** | GPT-4o-mini (overseas) | **DeepSeek-V4-Flash** → 国内直接可用，快速响应 |
+| 🔊 **语音输出 TTS** | Kokoro (English only) | **MOSS-TTS-Nano** → 中英双语语音合成 bilingual synthesis |
+| 🧠 **大语言模型 LLM** | GPT-4o-mini (overseas) | **DeepSeek-V4-Flash** → 国内直接可用，快速响应 / accessible in China |
 
 - MOSS-TTS-Nano 仅 **0.1B 参数**，CPU 即可运行 / *runs on CPU*
-- TTS 源码**捆绑在项目中**，安装时不需要访问 GitHub
-- 首次运行自动从 HuggingFace 下载 ONNX 模型（~500MB，仅一次）
-- 支持 **20 种语言**，中文效果优秀 / *20 languages supported*
+- TTS 源码**捆绑在项目中**，安装时不需要访问 GitHub / *TTS source bundled, no GitHub needed for install*
+- 首次运行自动从 HuggingFace 下载 ONNX 模型（~500MB，仅一次）/ *Auto-downloads ONNX models on first run*
+- 支持 **20 种语言**，中英文自动切换 / *20 languages, auto-detect Chinese/English*
 - 语音克隆：提供参考音频即可自定义音色 / *Voice cloning via reference audio*
 - 自动检测 MC 版本 / *Auto-detects Minecraft version* for recipe data
 
@@ -69,9 +69,9 @@ cp keys.example.json keys.json
 ```
 
 > 💡 **如何申请 DeepSeek API Key / How to get a DeepSeek API key**：
-> 1. 访问 [platform.deepseek.com](https://platform.deepseek.com) 注册/登录
-> 2. 点击左侧菜单 **API Keys** → **创建 API Key**
-> 3. 复制生成的 `sk-xxxx` 密钥填入 `keys.json`
+> 1. 访问 [platform.deepseek.com](https://platform.deepseek.com) 注册/登录 / *Sign up / log in*
+> 2. 点击左侧菜单 **API Keys** → **创建 API Key** / *Create API Key*
+> 3. 复制生成的 `sk-xxxx` 密钥填入 `keys.json` / *Copy and paste into keys.json*
 
 ### 2. 安装依赖 / Install Dependencies
 
@@ -84,7 +84,7 @@ npm install
 
 ### 3. 国内用户设置 HuggingFace 镜像 / China Users: Set HF Mirror
 
-TTS 模型首次运行需从 HuggingFace 下载（~500MB，仅一次）：
+TTS 模型首次运行需从 HuggingFace 下载（~500MB，仅一次） / *Models download from HuggingFace on first run (~500MB, one-time)*：
 
 ```bash
 export HF_ENDPOINT=https://hf-mirror.com
@@ -117,13 +117,13 @@ node main.js
 }
 ```
 
-文件名会自动在 `assets/audio/` 下查找。
+文件名会自动在 `assets/audio/` 下查找 / *Filenames are resolved under `assets/audio/` automatically*.
 
-> 💡 **参考音频建议 / Tips**: 5–15 秒清晰语音，WAV 格式，单人说话，背景安静。
+> 💡 **参考音频建议 / Tips**: 5–15 秒清晰语音，WAV 格式，单人说话，背景安静 / *5–15s clean speech, WAV format, single speaker, quiet background*.
 
 ### 5. 启动 Minecraft / Launch Minecraft
 
-可使用任意启动器 / *Any launcher works*：**Prism Launcher**、**Minecraft Launcher**（官方）、MultiMC 等。
+可使用任意启动器 / *Any launcher works*：**Prism Launcher**、**Minecraft Launcher** (官方 / official)、MultiMC 等。
 
 - 打开 Minecraft Java 版 / *Open Minecraft Java Edition*
 - 进入世界 → ESC → **对局域网开放 / Open to LAN** → 端口设为 / *port* **55916**
@@ -131,30 +131,30 @@ node main.js
 ### 6. 启动 Janet / Launch Janet
 
 ```bash
-# 正常启动（GPU 加速 TTS）
+# 正常启动 / normal start (GPU TTS)
 node main.js
 
-# 强制 CPU 模式（GPU 不可用时）
+# 强制 CPU 模式 / force CPU TTS
 node main.js --tts-cpu
 
-# 切换世界（清除旧任务和记忆）
+# 切换世界 / switching worlds (clear old tasks)
 node main.js --clean
 
-# 组合使用
+# 组合使用 / combined
 node main.js --clean --tts-cpu
 ```
 
 首次启动自动完成 / *First launch will automatically*：
-- 创建 Python 3.11 虚拟环境 (~3 min，安装 PyTorch 等)
-- 下载 ASR 模型 faster-whisper small (~500MB)
-- 下载 MOSS-TTS-Nano ONNX 模型 (~500MB，仅一次)
-- 国内用户先设 `export HF_ENDPOINT=https://hf-mirror.com` 加速下载
+- 创建 Python 3.11 虚拟环境 / *create Python 3.11 venv* (~3 min, PyTorch 等)
+- 下载 ASR 模型 faster-whisper small (~500MB) / *download ASR model*
+- 下载 MOSS-TTS-Nano ONNX 模型 (~500MB，仅一次) / *download TTS models (one-time)*
+- 国内用户先设 `export HF_ENDPOINT=https://hf-mirror.com` 加速下载 / *set HF mirror for faster download in China*
 
-> ⏳ 首次启动 8–15 分钟，后续秒级。首次启动被强制关闭无副作用，下次运行从断点继续。
+> ⏳ 首次启动 8–15 分钟，后续秒级 / *First launch ~8–15 min, subsequent launches are fast*.
 
-> 💡 **切换世界？** 记得用 `node main.js --clean` 清除旧任务和记忆，否则 Janet 会带着上一世界的任务状态进入新世界。
+> 💡 **切换世界？** 用 `node main.js --clean` 清除旧任务 / ***Switching worlds?** Use `--clean` to clear old tasks*.
 
-浏览器自动打开管理界面 `http://localhost:8080`。
+启动成功浏览器自动打开 `http://localhost:8080` / *Web UI auto-opens at `http://localhost:8080`*.
 
 ---
 
@@ -162,8 +162,8 @@ node main.js --clean --tts-cpu
 
 ### 🎤 语音输入 ASR (Speech-to-Text)
 
-- **按住 `V` 键**说话，松开自动识别发送
-- 默认 **中文普通话**
+- **按住 `V` 键**说话，松开自动识别发送 / *Hold V to speak, release to send*
+- 默认 **中文普通话**，英文也能正常识别 / *Default Mandarin Chinese, English also recognized*
 - 切换语言 / *Switch language*：
 
 ```bash
@@ -173,11 +173,11 @@ export ASR_LANGUAGE=en    # 英文 English
 
 ### 🔊 语音输出 TTS (Text-to-Speech)
 
-- Janet 的回复通过 MOSS-TTS-Nano 合成语音播放
-- **自动检测文本语言**：中文文本走中文 TTS 通道，英文自动切英文通道
-- 语音克隆：参考音频决定音色，文本语言自动适配
-- 默认 GPU 加速，`--tts-cpu` 可强制 CPU
-- `ffplay` 播放音频
+- Janet 的回复通过 MOSS-TTS-Nano 合成语音播放 / *Replies synthesized via MOSS-TTS-Nano*
+- **自动检测文本语言**：中文走中文通道，英文自动切英文 / *Auto-detects text language*
+- 语音克隆：参考音频决定音色，文本语言自动适配 / *Reference audio = voice, text = language*
+- 默认 GPU 加速，`--tts-cpu` 强制 CPU / *GPU by default, --tts-cpu for CPU*
+- `ffplay` 播放 / *playback via ffplay*
 - 设置 `"speak": false` 关闭语音 / *disable TTS*
 
 ---
@@ -194,13 +194,13 @@ export ASR_LANGUAGE=en    # 英文 English
 | `asr_port` | `8090` | ASR 服务端口 |
 | `asr_key` | `"v"` | 按键 / Push-to-talk key |
 | `speak` | `true` | 启用语音输出 / Enable TTS |
-| `minecraft_version` | `"auto"` | MC 版本自动检测 / Auto-detect |
+| `minecraft_version` | `"auto"` | MC 版本自动检测 / Auto-detect version |
 | `host` | `"localhost"` | MC 服务器地址 |
 | `port` | `55916` | MC 端口 |
 
 ### 切换 LLM / Switch LLM
 
-修改 `settings.js` → `profiles` 数组：
+修改 `settings.js` → `profiles` 数组 / *Edit the profiles array*：
 
 | Profile | 模型 Model |
 |---------|-----------|
@@ -213,7 +213,7 @@ export ASR_LANGUAGE=en    # 英文 English
 
 ### TTS 模型存储 / TTS Model Storage
 
-ONNX 模型默认下载到 `models/moss_tts/`（已在 `.gitignore` 中）。可通过环境变量自定义：
+ONNX 模型默认下载到 `models/moss_tts/`（已在 `.gitignore` 中）。可通过环境变量自定义 / *Auto-downloaded to `models/moss_tts/`, configurable via env var*：
 
 ```bash
 export MOSS_MODEL_DIR=/your/custom/path
@@ -221,7 +221,7 @@ export MOSS_MODEL_DIR=/your/custom/path
 
 ### 跨 MC 版本 / Multi-Version Support
 
-`"minecraft_version": "auto"` 自动检测服务器版本并加载对应配方。支持 1.18–1.21+。
+`"minecraft_version": "auto"` 自动检测服务器版本并加载对应配方。支持 1.18–1.21+ / *Auto-detects server version and loads correct recipes. Supports 1.18–1.21+.*
 
 ---
 
@@ -236,21 +236,21 @@ janet_chinese_support/
 │   └── deepseek.json       # DeepSeek-V4-Flash profile (中文 prompt)
 ├── src/
 │   ├── agent/
-│   │   ├── speak.js        # TTS 语音输出逻辑 (moss_tts + remote)
+│   │   ├── speak.js        # TTS 语音输出逻辑 / TTS output (moss_tts + remote)
 │   │   └── moss_tts/       # MOSS-TTS-Nano 服务 (NEW)
-│   │       ├── MOSS-TTS-Nano/  # 捆绑的 TTS 源码 (无需 GitHub)
+│   │       ├── MOSS-TTS-Nano/  # 捆绑的 TTS 源码 / bundled source (无需 GitHub)
 │   │       ├── moss-tts-server.py  # Python FastAPI (:8001)
-│   │       ├── tts_launcher.js     # Node.js 生命周期管理
-│   │       └── requirements.txt    # Python 依赖
+│   │       ├── tts_launcher.js     # Node.js 生命周期管理 / lifecycle mgr
+│   │       └── requirements.txt    # Python 依赖 / deps
 │   ├── asr/
 │   │   ├── asr_server/     # faster-whisper ASR (:8090)
 │   │   ├── voice_bridge/   # Push-to-talk bridge
-│   │   └── launcher.js     # ASR 生命周期管理
+│   │   └── launcher.js     # ASR 生命周期管理 / lifecycle mgr
 │   └── models/
 │       └── deepseek.js     # DeepSeek API client
 ├── assets/audio/
-│   └── zh_1.wav            # 默认中文女声参考音频
-├── models/moss_tts/        # ONNX 模型缓存 (首次自动下载，gitignore)
+│   └── zh_1.wav            # 默认中文女声参考音频 / default female voice ref
+├── models/moss_tts/        # ONNX 模型缓存 / model cache (auto-downloaded, gitignored)
 └── tasks/                  # 预定义任务 / Task definitions
 ```
 
@@ -261,67 +261,67 @@ janet_chinese_support/
 ### TTS 启动失败 / TTS Startup Failure
 
 ```bash
-# Python 版本不对？确认 3.11+
-python3 --version  # 应该 >= 3.11
+# Python 版本不对？确认 3.11+ / Verify Python version
+python3 --version  # should be >= 3.11
 
-# 缺少 tn 模块？
-# 确认 WeTextProcessing 已安装
+# 缺少 tn 模块？确认 WeTextProcessing 已安装
+# Missing tn module? Check WeTextProcessing is installed
 /home/.../moss_tts/.venv/bin/pip list | grep WeTextProcessing
 
-# 模型下载失败？国内用镜像
+# 模型下载失败？国内用镜像 / Model download failed? Use HF mirror
 export HF_ENDPOINT=https://hf-mirror.com
-# 然后删除 models/moss_tts/ 重新下载
+# 然后删除 models/moss_tts/ 重新下载 / then delete models/moss_tts/ and retry
 ```
 
 ### ASR 不识别中文 / ASR Not Recognizing Chinese
 
 ```bash
 export ASR_LANGUAGE=zh
-# 检查麦克风
+# 检查麦克风 / Test microphone
 python3 -c "import sounddevice; print(sounddevice.query_devices())"
 ```
 
 ### DeepSeek API 失败 / API Failure
 
-- 确认 `keys.json` 中 `DEEPSEEK_API_KEY` 已正确填写
-- 检查网络是否能访问 `https://api.deepseek.com`
-- 确认账户余额充足
-- 如需切换 Pro 模型：修改 `profiles/deepseek.json` 中 `"model"` 为 `"deepseek-v4-pro"`
+- 确认 `keys.json` 中 `DEEPSEEK_API_KEY` 已正确填写 / *Verify API key is set correctly*
+- 检查网络是否能访问 `https://api.deepseek.com` / *Check network access*
+- 确认账户余额充足 / *Check account balance*
+- 如需切换 Pro 模型 / *To switch to Pro*：修改 `profiles/deepseek.json` 中 `"model"` 为 `"deepseek-v4-pro"`
 
 ### Janet 回复是英文 / Janet Responds in English
 
-- 确认 `profiles/deepseek.json` 的 `conversing` 字段包含中文系统提示
-- 确认 `settings.js` 的 `init_message` 使用中文
+- 确认 `profiles/deepseek.json` 的 `conversing` 字段包含中文系统提示 / *Verify Chinese system prompt*
+- 确认 `settings.js` 的 `init_message` 使用中文 / *Verify Chinese init message*
 
 ### 切换世界后 Janet 行为异常 / Janet Acts Weird After Switching Worlds
 
-任务和记忆持久化在 `bots/<agent>/tasks/` 和 `bots/<agent>/memory.json`。换世界后旧任务状态仍在，导致 Janet 执行不存在的任务。
+任务和记忆持久化在 `bots/<agent>/tasks/` 和 `bots/<agent>/memory.json`。换世界后旧任务状态仍在 / *Tasks and memory persist on disk, causing stale state after world switch*。
 
 ```bash
-# 换世界时使用 --clean 清除
+# 换世界时使用 --clean 清除 / Use --clean when switching worlds
 node main.js --clean
 
-# 或手动清除
+# 或手动清除 / or manually
 rm -rf bots/deepseek/tasks/ bots/deepseek/memory.json
 ```
 
 ### TTS 声音不合适 / TTS Voice Sounds Wrong
 
-当前默认用 `zh_3.wav`（女声）。`assets/audio/` 下还有其他可选：
+当前默认用 `zh_3.wav`（女声）。`assets/audio/` 下还有其他可选 / *Default is zh_3.wav (female). Other voices available*：
 
 ```bash
 ls assets/audio/
 # zh_1.wav  zh_3.wav  zh_4.wav  zh_6.wav  zh_10.wav  zh_11.wav
 ```
 
-修改 `profiles/deepseek.json` 中 `speak_model` 的编号切换，如 `moss_tts/zh_4`。
+修改 `profiles/deepseek.json` 中 `speak_model` 的编号切换 / *Change the number in speak_model*，如 `moss_tts/zh_4`.
 
 ### 端口冲突 / Port Conflict
 
 ```
 ASR: 8090 | TTS: 8001 | MindServer: 8080
-→ Modify in settings.js if ports clash
-→ Or: lsof -ti:8080 | xargs kill -9
+→ 启动时自动清理 / auto-cleaned on startup
+→ 或手动 / or manually: lsof -ti:8080 | xargs kill -9
 ```
 
 ---

@@ -267,6 +267,15 @@ export class TTSService {
                 console.log(`[${label}] Installing requirements (this may take several minutes)...`);
                 execSync(`"${venvPython}" -m pip install --upgrade pip`, { cwd: componentDir, stdio: 'inherit' });
                 execSync(`"${venvPython}" -m pip install -r "${requirementsFile}"`, { cwd: componentDir, stdio: 'inherit' });
+                // moss-tts-nano may pull in CPU onnxruntime as transitive dep → remove if GPU version exists
+                try {
+                    const both = execSync(`"${venvPython}" -m pip list 2>/dev/null | grep -E "^onnxruntime "`, { encoding: 'utf-8' });
+                    const gpu = execSync(`"${venvPython}" -m pip list 2>/dev/null | grep -E "^onnxruntime-gpu "`, { encoding: 'utf-8' });
+                    if (both && gpu) {
+                        console.log(`[${label}] Removing CPU onnxruntime (GPU version installed)...`);
+                        execSync(`"${venvPython}" -m pip uninstall -y onnxruntime`, { cwd: componentDir, stdio: 'inherit' });
+                    }
+                } catch {}
             }
         }
 

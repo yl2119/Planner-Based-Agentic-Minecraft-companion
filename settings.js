@@ -28,7 +28,7 @@ const settings = {
     ],
 
     "load_memory": false, // load memory from previous session
-    "init_message": "Respond with a warm friendly greeting, introduce yourself as Janet", // sends to all on spawn
+    "init_message": "用中文回复一句温暖友好的问候，介绍自己是Janet，一个我的世界AI伙伴", // sends to all on spawn
     "only_chat_with": [], // users that the bots listen to and send general messages to. if empty it will chat publicly
 
     "speak": true,
@@ -45,7 +45,7 @@ const settings = {
     "asr_key": "v",           // push-to-talk key
 
     "chat_ingame": true, // bot responses are shown in minecraft chat
-    "language": "zh", // translate to/from this language. Supports these language names: https://cloud.google.com/translate/docs/languages
+    "language": "zh-CN", // translate to/from this language. Supports these language names: https://cloud.google.com/translate/docs/languages Supports these language names: https://cloud.google.com/translate/docs/languages
     "render_bot_view": false, // show bot's view in browser at localhost:3000, 3001...
 
     "allow_insecure_coding": false, // allows newAction command and model can write/run code on your computer. enable at own risk

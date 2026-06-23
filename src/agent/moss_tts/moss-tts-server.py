@@ -82,7 +82,12 @@ _tts_runtime = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _tts_runtime
-    from onnx_tts_runtime import OnnxTtsRuntime
+    from onnx_tts_runtime import (
+        OnnxTtsRuntime,
+        ensure_browser_onnx_model_dir,
+        _download_default_browser_onnx_assets,
+        _find_manifest_path,
+    )
 
     print("[MOSS-TTS] Server starting...")
     print(f"[MOSS-TTS] Default ref audio: {DEFAULT_REF_AUDIO}")
@@ -96,7 +101,14 @@ async def lifespan(app: FastAPI):
         print("[MOSS-TTS] Tip: set HF_ENDPOINT=https://hf-mirror.com if you are in China")
 
     try:
-        print("[MOSS-TTS] Loading ONNX TTS runtime (first run downloads ~500MB models)...")
+        # Ensure models exist: download if missing (first run)
+        model_dir_path = Path(MODEL_DIR)
+        if _find_manifest_path(model_dir_path) is None:
+            print(f"[MOSS-TTS] Models not found, downloading from HuggingFace (~500MB, one-time)...")
+            _download_default_browser_onnx_assets(model_dir_path)
+            print("[MOSS-TTS] Download complete")
+
+        print("[MOSS-TTS] Loading ONNX TTS runtime...")
         _tts_runtime = OnnxTtsRuntime(model_dir=MODEL_DIR)
         print("[MOSS-TTS] Runtime loaded, warming up...")
 

@@ -223,6 +223,10 @@ export class TTSService {
                     .filter(line => line && !line.startsWith('#') && !line.startsWith('--'));
 
                 for (const req of requirements) {
+                    // Skip local path installs (e.g. ./MOSS-TTS-Nano)
+                    if (req.startsWith('.') || req.startsWith('/')) {
+                        continue;
+                    }
                     const packageName = req.split(/[=>\[]/)[0].trim();
                     if (!installed.includes(packageName)) {
                         console.log(`[${label}] Missing dependency: ${packageName}`);

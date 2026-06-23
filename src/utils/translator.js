@@ -4,11 +4,11 @@ import settings from '../agent/settings.js';
 
 
 export async function handleTranslation(message) {
-    let preferred_lang = String(settings.language).toLowerCase();
+    let preferred_lang = settings.language;
     if (!preferred_lang || preferred_lang === 'en' || preferred_lang === 'english')
         return message;
     try {
-        const translation = await translate(message, { to: preferred_lang });
+        const translation = await translate(message, { to: preferred_lang, forceTo: true });
         return translation.text || message;
     } catch (error) {
         console.error('Error translating message:', error);

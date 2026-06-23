@@ -68,7 +68,10 @@ cp keys.example.json keys.json
 }
 ```
 
-> 💡 申请 API Key / *Get an API key*: [platform.deepseek.com](https://platform.deepseek.com)
+> 💡 **如何申请 DeepSeek API Key / How to get a DeepSeek API key**：
+> 1. 访问 [platform.deepseek.com](https://platform.deepseek.com) 注册/登录
+> 2. 点击左侧菜单 **API Keys** → **创建 API Key**
+> 3. 复制生成的 `sk-xxxx` 密钥填入 `keys.json`
 
 ### 2. 安装依赖 / Install Dependencies
 
@@ -119,6 +122,8 @@ node main.js
 > 💡 **参考音频建议 / Tips**: 5–15 秒清晰语音，WAV 格式，单人说话，背景安静。
 
 ### 5. 启动 Minecraft / Launch Minecraft
+
+可使用任意启动器 / *Any launcher works*：**Prism Launcher**、**Minecraft Launcher**（官方）、MultiMC 等。
 
 - 打开 Minecraft Java 版 / *Open Minecraft Java Edition*
 - 进入世界 → ESC → **对局域网开放 / Open to LAN** → 端口设为 / *port* **55916**

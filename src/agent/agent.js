@@ -300,6 +300,9 @@ export class Agent {
         if (from_other_bot)
             this.last_sender = source;
 
+        // Detect player language BEFORE translation (so we know original language)
+        this.player_lang = /[一-鿿㐀-䶿]/.test(message) ? 'zh' : 'en';
+
         // Now translate the message
         message = await handleEnglishTranslation(message);
         console.log('received message from', source, ':', message);

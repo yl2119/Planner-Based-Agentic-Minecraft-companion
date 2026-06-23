@@ -6,6 +6,10 @@
 
 > *A Chinese-localized fork. Lets Janet listen, speak, and think in Chinese — no overseas services required.*
 
+> ✅ **已测试 / Tested**: Ubuntu 22.04 LTS + Prism Launcher + Minecraft 1.21.1  
+> 🪟 **Windows**: 代码已做跨平台适配，理论上支持，但尚未充分测试 — 欢迎反馈！  
+> 🪟 *Windows: cross-platform code paths are in place but not yet fully tested — feedback welcome!*
+
 ---
 
 ## ✨ 特性 / Features

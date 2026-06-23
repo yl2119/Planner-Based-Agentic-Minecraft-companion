@@ -126,7 +126,11 @@ node main.js
 ### 6. 启动 Janet / Launch Janet
 
 ```bash
+# 正常启动
 node main.js
+
+# 切换世界时启动（清除旧任务和记忆）
+node main.js --clean
 ```
 
 首次启动自动完成 / *First launch will automatically*：
@@ -136,6 +140,8 @@ node main.js
 - 国内用户先设 `export HF_ENDPOINT=https://hf-mirror.com` 加速下载
 
 > ⏳ 首次启动 8–15 分钟，后续秒级。首次启动被强制关闭无副作用，下次运行从断点继续。
+
+> 💡 **切换世界？** 记得用 `node main.js --clean` 清除旧任务和记忆，否则 Janet 会带着上一世界的任务状态进入新世界。
 
 浏览器自动打开管理界面 `http://localhost:8080`。
 
@@ -272,6 +278,29 @@ python3 -c "import sounddevice; print(sounddevice.query_devices())"
 
 - 确认 `profiles/deepseek.json` 的 `conversing` 字段包含中文系统提示
 - 确认 `settings.js` 的 `init_message` 使用中文
+
+### 切换世界后 Janet 行为异常 / Janet Acts Weird After Switching Worlds
+
+任务和记忆持久化在 `bots/<agent>/tasks/` 和 `bots/<agent>/memory.json`。换世界后旧任务状态仍在，导致 Janet 执行不存在的任务。
+
+```bash
+# 换世界时使用 --clean 清除
+node main.js --clean
+
+# 或手动清除
+rm -rf bots/deepseek/tasks/ bots/deepseek/memory.json
+```
+
+### TTS 声音不合适 / TTS Voice Sounds Wrong
+
+当前默认用 `zh_3.wav`（女声）。`assets/audio/` 下还有其他可选：
+
+```bash
+ls assets/audio/
+# zh_1.wav  zh_3.wav  zh_4.wav  zh_6.wav  zh_10.wav  zh_11.wav
+```
+
+修改 `profiles/deepseek.json` 中 `speak_model` 的编号切换，如 `moss_tts/zh_4`。
 
 ### 端口冲突 / Port Conflict
 

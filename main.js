@@ -2,7 +2,7 @@ import * as Mindcraft from './src/mindcraft/mindcraft.js';
 import settings from './settings.js';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync, rmSync } from 'fs';
 //support moss-tts-nano
 import { TTSService } from './src/agent/moss_tts/tts_launcher.js';
 //suport asr
@@ -20,6 +20,11 @@ function parseArguments() {
         .option('task_id', {
             type: 'string',
             describe: 'Task ID to execute'
+        })
+        .option('clean', {
+            type: 'boolean',
+            default: false,
+            describe: 'Clear all persisted tasks and memory before starting (useful when switching worlds)',
         })
         .help()
         .alias('help', 'h')
@@ -93,6 +98,30 @@ if (settings.speak){
 process.on('exit', cleanupASR);
 process.on('SIGINT', () => { cleanupASR(); process.exit(); });
 process.on('SIGTERM', () => { cleanupASR(); process.exit(); });
+
+// --clean flag: clear persisted tasks and memory (useful when switching worlds)
+if (args.clean) {
+    console.log('[clean] Clearing old tasks and memory...');
+    for (let profile of settings.profiles) {
+        try {
+            const profile_json = JSON.parse(readFileSync(profile, 'utf8'));
+            const agentName = profile_json.name || 'andy';
+            const tasksDir = `./bots/${agentName}/tasks`;
+            const memPath = `./bots/${agentName}/memory.json`;
+            if (existsSync(tasksDir)) {
+                rmSync(tasksDir, { recursive: true, force: true });
+                console.log(`[clean] Removed tasks: ${tasksDir}`);
+            }
+            if (existsSync(memPath)) {
+                rmSync(memPath);
+                console.log(`[clean] Removed memory: ${memPath}`);
+            }
+        } catch (err) {
+            console.warn(`[clean] Failed to clean profile ${profile}: ${err.message}`);
+        }
+    }
+    console.log('[clean] Done.');
+}
 
 for (let profile of settings.profiles) {
     const profile_json = JSON.parse(readFileSync(profile, 'utf8'));

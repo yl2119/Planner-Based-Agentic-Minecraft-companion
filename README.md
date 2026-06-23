@@ -168,7 +168,10 @@ export ASR_LANGUAGE=en    # 英文 English
 
 ### 🔊 语音输出 TTS (Text-to-Speech)
 
-- Janet 的回复通过 MOSS-TTS-Nano 合成中文语音播放
+- Janet 的回复通过 MOSS-TTS-Nano 合成语音播放
+- **自动检测文本语言**：中文文本走中文 TTS 通道，英文自动切英文通道
+- 语音克隆：参考音频决定音色，文本语言自动适配
+- 默认 GPU 加速，`--tts-cpu` 可强制 CPU
 - `ffplay` 播放音频
 - 设置 `"speak": false` 关闭语音 / *disable TTS*
 

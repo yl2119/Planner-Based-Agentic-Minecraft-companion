@@ -262,6 +262,13 @@ export class TTSService {
             try { execSync('python --version', { stdio: 'ignore' }); return 'python'; }
             catch { return 'python3'; }
         }
-        return 'python3';
+        // MOSS-TTS-Nano requires Python >=3.11
+        try { execSync('python3.11 --version', { stdio: 'ignore' }); return 'python3.11'; }
+        catch {
+            try { execSync('python3.12 --version', { stdio: 'ignore' }); return 'python3.12'; }
+            catch {
+                return 'python3';
+            }
+        }
     }
 }

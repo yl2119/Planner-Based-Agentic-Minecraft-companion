@@ -17,7 +17,7 @@ import settings from './settings.js';
 import { Task } from './tasks/tasks.js';
 import { speak } from './speak.js';
 import { log, validateNameFormat, handleDisconnection } from './connection_handler.js';
-import {TTSService} from './kokoro/tts_launcher.js'
+import {TTSService} from './moss_tts/tts_launcher.js'
 import { TaskManager } from './task_manager.js';
 
 export class Agent {
@@ -429,7 +429,7 @@ export class Agent {
         }
         else {
             if (settings.speak) {
-                if (this.prompter.profile.speak_model === "kokoro"){
+                if (this.prompter.profile.speak_model === "kokoro" || this.prompter.profile.speak_model?.startsWith("moss_tts")){
                     this.tts.speak(to_translate)
                 }else{
                     speak(to_translate, this.prompter.profile.speak_model);

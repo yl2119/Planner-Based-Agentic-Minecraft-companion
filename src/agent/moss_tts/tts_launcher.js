@@ -1,5 +1,5 @@
 import { spawn, execSync } from 'child_process';
-import { existsSync, readFileSync, rmSync } from 'fs';
+import { existsSync, readFileSync, readdirSync, rmSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import which from 'which';
@@ -51,11 +51,24 @@ export class TTSService {
                 }
             }, 300000);
 
+            // Inject venv CUDA libs so onnxruntime-gpu works without system toolkit
+            const venvLib = path.join(__dirname, '.venv', 'lib');
+            const ldPaths = [];
+            if (existsSync(venvLib)) {
+                const pyDirs = readdirSync(venvLib).filter(d => d.startsWith('python3.'));
+                for (const d of pyDirs) {
+                    const cudaLib = path.join(venvLib, d, 'site-packages', 'nvidia', 'cuda_runtime', 'lib');
+                    if (existsSync(cudaLib)) ldPaths.push(cudaLib);
+                }
+            }
+            const ldEnv = ldPaths.join(':') + (process.env.LD_LIBRARY_PATH ? ':' + process.env.LD_LIBRARY_PATH : '');
+
             // spawn the venv python and point cwd to the server directory
             this.pythonServer = spawn(venvPython, ['moss-tts-server.py'], {
                 cwd: __dirname,
                 env: {
                     ...process.env,
+                    LD_LIBRARY_PATH: ldEnv || process.env.LD_LIBRARY_PATH,
                     MOSS_REF_AUDIO: defaultRefAudio,
                 },
                 stdio: ['pipe', 'pipe', 'pipe']

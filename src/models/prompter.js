@@ -233,10 +233,6 @@ export class Prompter {
 
             let prompt = this.profile.conversing;
 
-            // Use agent's stored player language (set BEFORE translation in agent.js)
-            const playerLang = this.agent.player_lang || 'zh';
-            const langHint = playerLang === 'zh' ? '中文 (zh)' : 'English';
-            prompt = `**当前玩家语言 / Current Player Language: ${langHint}**\n\n` + prompt;
 
             prompt = await this.replaceStrings(prompt, messages, this.convo_examples);
             

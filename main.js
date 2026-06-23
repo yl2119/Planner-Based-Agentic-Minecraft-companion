@@ -146,8 +146,26 @@ if (args.clean) {
     console.log('[clean] Done.');
 }
 
+// Set response language based on ASR_LANGUAGE (zh → Chinese, en → English)
+const asrLang = (process.env.ASR_LANGUAGE || 'zh').trim().toLowerCase();
+const langRules = {
+    zh: { conversing_rule: '- 始终使用中文回复。', init_msg: '用中文回复一句温暖友好的问候，介绍自己是Janet，一个我的世界AI伙伴' },
+    en: { conversing_rule: '- Always reply in English.', init_msg: 'Reply with a warm friendly greeting in English and introduce yourself as Janet, a Minecraft AI companion' },
+};
+const langConfig = langRules[asrLang] || langRules.zh;
+
 for (let profile of settings.profiles) {
     const profile_json = JSON.parse(readFileSync(profile, 'utf8'));
+    // Inject language rule into conversing prompt
+    if (profile_json.conversing) {
+        // Replace any existing language rule with the configured one
+        profile_json.conversing = profile_json.conversing
+            .replace(/- (始终使用中文回复|用玩家使用的语言回复[^\n]*|Always reply in English)[^\n]*\n?/g, '')
+            .replace(/(交流规则：\n)/, '$1' + langConfig.conversing_rule + '\n');
+    }
     settings.profile = profile_json;
+    if (!settings.init_message || settings.init_message.includes('Reply with a warm') || settings.init_message.includes('用中文回复')) {
+        settings.init_message = langConfig.init_msg;
+    }
     Mindcraft.createAgent(settings);
 }

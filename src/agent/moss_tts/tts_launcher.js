@@ -156,15 +156,20 @@ export class TTSService {
             if (!response.body) throw new Error('No response body');
 
             // Spawn ffplay for 48000 Hz stereo PCM
+            const ttsSpeed = process.env.TTS_SPEED || '2.0';
             const isWin = process.platform === 'win32';
 
             const player = isWin ? spawn('ffplay', [
                 '-autoexit', '-nodisp',
-                '-f', 's16le', '-ar', '48000', '-ch_layout', 'stereo', '-i', '-'
+                '-f', 's16le', '-ar', '48000', '-ch_layout', 'stereo',
+                '-af', `atempo=${ttsSpeed}`,
+                '-i', '-'
             ]) :
             spawn('ffplay', [
                 '-autoexit', '-nodisp',
-                '-f', 's16le', '-ar', '48000', '-ac', '2', '-i', '-'
+                '-f', 's16le', '-ar', '48000', '-ac', '2',
+                '-af', `atempo=${ttsSpeed}`,
+                '-i', '-'
             ]);
 
             const reader = response.body.getReader();

@@ -2,7 +2,7 @@
 
 > *Janet Chinese Edition — Minecraft AI Companion*
 
-基于 [Planner-Based Agentic Minecraft Companion](https://github.com/Ing-Ji/Planner-Based-Agentic-Minecraft-companion) 的中文本地化优化版本。
+基于 [Planner-Based Agentic Minecraft Companion](https://github.com/Ing-Ji/Planner-Based-Agentic-Minecraft-companion) 的中文本地化优化版本。本仓库：`yl2119/Planner-Based-Agentic-Minecraft-companion-Chinese-support`。
 
 > *A Chinese-localized fork of the Planner-Based Agentic Minecraft Companion. Lets Janet listen, speak, and think in Chinese.*
 

@@ -34,6 +34,15 @@ export function speak(text, speak_model) {
         .catch(err => { item.error = err; });
     }
 
+    // Queue management: only keep the latest pending message.
+    // When agent executes faster than TTS speaks, this prevents
+    // the user from hearing stale/historical messages.
+    // Max 2 items: 1 currently playing + 1 pending (the latest).
+    if (isSpeaking) {
+        const dropped = speakingQueue.length;
+        if (dropped > 0) console.log(`[TTS] skipping ${dropped} stale message(s), speaking latest`);
+        speakingQueue.length = 0;  // discard all old pending items
+    }
     speakingQueue.push(item);
     if (!isSpeaking) processQueue();
 }

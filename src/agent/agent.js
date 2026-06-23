@@ -430,7 +430,10 @@ export class Agent {
             if (settings.speak) {
                 // Use translated text for TTS so speech matches ASR_LANGUAGE
                 let speak_text = translated_text
-                    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')  // emoji (TTS can't read them)
+                    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')  // emoji 🌟😊
+                    .replace(/[～〜]/g, '')               // fullwidth tildes (decorative, TTS chokes)
+                    .replace(/…/g, '，')                   // ellipsis → pause
+                    .replace(/[♪♫☆★↗↘↙↖◉◎◉]/g, '')    // misc decorative symbols
                     .replace(/\*\*(.+?)\*\*/g, '$1')   // bold
                     .replace(/__(.+?)__/g, '$1')         // underline
                     .replace(/\*(.+?)\*/g, '$1')         // italic

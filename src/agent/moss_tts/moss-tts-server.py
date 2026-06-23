@@ -103,8 +103,10 @@ async def lifespan(app: FastAPI):
     try:
         # Ensure models exist: download if missing (first run)
         model_dir_path = Path(MODEL_DIR)
-        if _find_manifest_path(model_dir_path) is None:
-            print(f"[MOSS-TTS] Models not found, downloading from HuggingFace (~500MB, one-time)...")
+        tts_manifest = model_dir_path / "MOSS-TTS-Nano-100M-ONNX" / "browser_poc_manifest.json"
+        codec_meta = model_dir_path / "MOSS-Audio-Tokenizer-Nano-ONNX" / "codec_browser_onnx_meta.json"
+        if not tts_manifest.exists() or not codec_meta.exists():
+            print(f"[MOSS-TTS] Models not found or incomplete, downloading from HuggingFace (~500MB, one-time)...")
             _download_default_browser_onnx_assets(model_dir_path)
             print("[MOSS-TTS] Download complete")
 
